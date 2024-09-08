@@ -12,6 +12,7 @@ import { IoArrowForwardSharp, IoSearch, IoSearchOutline } from 'react-icons/io5'
 import { CiSearch } from 'react-icons/ci';
 import MenuItemCard from './MenuCategories';
 import MenuCategories from './MenuCategories';
+import SubMenu from './SubMenu';
 
 type params = {
     id: number
@@ -208,30 +209,30 @@ const RestaurantMenu = () => {
                         menuData && menuData.map((menuCategory, index) => {
 
                             return menuCategory?.card?.card?.title ? (
-
-                                <div className='flex flex-col' key={index}>
-                                    <div key={index} className='flex justify-between items-center py-2'>
-                                        <h1
-                                            className='text-gray-900 font-extrabold text-sm font-roboto'>
-                                            {menuCategory?.card?.card?.title} {menuCategory?.card?.card?.itemCards ? `(${menuCategory?.card?.card?.itemCards?.length})` : ''}
-                                        </h1>
-                                        <div className='w-8 h-8 cursor-pointer' onClick={() => handleToggleMenuCategory(index)}>
-                                            {openMenus[index].status ?
-                                                <IoIosArrowUp className=' text-lg ' /> :
-                                                <IoIosArrowDown className=' text-lg ' />
-                                            }
-                                        </div>
-                                    </div>
-                                    {
-                                        openMenus[index].status ?
-                                            <MenuCategories
-                                                itemCards={menuCategory?.card?.card?.itemCards}
-                                                categories={menuCategory?.card?.card?.categories}
-                                                index={index}
-                                            /> : null
-                                    }
-                                    <div className='w-[110%] -ml-4 h-4 bg-[#F2F2F3] '></div>         {/* thick hr between categories  */}
-                                </div>
+                                <SubMenu subMenuData={menuCategory?.card?.card} key={index}/>
+                                // <div className='flex flex-col' key={index}>
+                                //     <div key={index} className='flex justify-between items-center py-2'>
+                                //         <h1
+                                //             className='text-gray-900 font-extrabold text-sm font-roboto'>
+                                //             {menuCategory?.card?.card?.title} {menuCategory?.card?.card?.itemCards ? `(${menuCategory?.card?.card?.itemCards?.length})` : ''}
+                                //         </h1>
+                                //         <div className='w-8 h-8 cursor-pointer' onClick={() => handleToggleMenuCategory(index)}>
+                                //             {openMenus[index].status ?
+                                //                 <IoIosArrowUp className=' text-lg ' /> :
+                                //                 <IoIosArrowDown className=' text-lg ' />
+                                //             }
+                                //         </div>
+                                //     </div>
+                                //     {
+                                //         openMenus[index].status ?
+                                //             <MenuCategories
+                                //                 itemCards={menuCategory?.card?.card?.itemCards}
+                                //                 categories={menuCategory?.card?.card?.categories}
+                                //                 index={index}
+                                //             /> : null
+                                //     }
+                                //     <div className='w-[110%] -ml-4 h-4 bg-[#F2F2F3] '></div>         {/* thick hr between categories  */}
+                                // </div>
                             ) : null
                         })
                     }
