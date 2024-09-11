@@ -1,9 +1,9 @@
 import React, { useState } from 'react'
 import { IoIosArrowDown, IoIosArrowUp } from 'react-icons/io';
-import MenuCategories from './MenuCategories';
 import MenuItemsList from './MenuItemsList';
+import MenuSubCategories from './MenuSubCategories';
 
-const SubMenu = ({ subMenuData }) => {
+const MenuCategories = ({ subMenuData }) => {
 
     const [isOpen, setIsOpen] = useState(true);
 
@@ -15,7 +15,7 @@ const SubMenu = ({ subMenuData }) => {
                     className='text-gray-900 font-extrabold text-sm font-roboto'>
                     {subMenuData?.title} {subMenuData?.itemCards ? `(${subMenuData?.itemCards?.length})` : ''}
                 </h1>
-                <div className='w-8 h-8 cursor-pointer' onClick={() => setIsOpen((prevVal) => !prevVal)}>
+                <div className='w-8 h-8 cursor-pointer' onClick={() => setIsOpen(prevVal => !prevVal)}>
                     {isOpen ?
                         <IoIosArrowUp className=' text-lg ' /> :
                         <IoIosArrowDown className=' text-lg ' />
@@ -23,24 +23,23 @@ const SubMenu = ({ subMenuData }) => {
                 </div>
             </div>
             {
-                // isOpen ?
-                //     <MenuCategories
-                //         itemCards={subMenuData?.itemCards}
-                //         categories={subMenuData?.categories}
-                //         index={0}
-                //     /> : null
-
                 isOpen &&
-                    subMenuData?.categories && subMenuData?.categories?.length ?
-                    subMenuData?.categories?.map((subCategory, subCategoryIndex) =>
-                        <MenuCategories subCategory={subCategory} key={subCategoryIndex} />
-                    )
-                    :
-                    <MenuItemsList itemCards={subMenuData?.itemCards} />
+                (
+                    <div className='duration-500'>
+                        {
+                            subMenuData?.categories && subMenuData?.categories?.length ?
+                                subMenuData?.categories?.map((subCategory, subCategoryIndex) =>
+                                    <MenuSubCategories subCategory={subCategory} key={subCategoryIndex} />     //display subcategories if present
+                                )
+                                :
+                                <MenuItemsList itemCards={subMenuData?.itemCards} />                        // else display menu items
+                        }
+                    </div>
+                )
             }
             <div className='w-[110%] -ml-4 h-4 bg-[#F2F2F3] '></div>         {/* thick hr between categories  */}
         </div>
     )
 }
 
-export default SubMenu
+export default MenuCategories

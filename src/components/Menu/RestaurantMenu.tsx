@@ -1,18 +1,14 @@
 import axios from 'axios'
 import { useEffect, useRef, useState } from 'react'
 import { IconContext } from 'react-icons'
-import { FaArrowLeft, FaArrowRight, FaStar } from 'react-icons/fa'
+import {  FaStar } from 'react-icons/fa'
 import { GoDotFill } from 'react-icons/go';
 import { MdDeliveryDining } from 'react-icons/md';
 import { Link, useParams } from 'react-router-dom'
 import DealsCard from './DealsCard';
-import { FaArrowLeftLong, FaArrowRightLong } from 'react-icons/fa6';
-import { IoIosArrowDown, IoIosArrowUp, IoMdArrowBack } from 'react-icons/io';
-import { IoArrowForwardSharp, IoSearch, IoSearchOutline } from 'react-icons/io5';
-import { CiSearch } from 'react-icons/ci';
-import MenuItemCard from './MenuCategories';
+import {IoMdArrowBack } from 'react-icons/io';
+import { IoArrowForwardSharp, IoSearchOutline } from 'react-icons/io5';
 import MenuCategories from './MenuCategories';
-import SubMenu from './SubMenu';
 
 type params = {
     id: number
@@ -50,10 +46,11 @@ const RestaurantMenu = () => {
         const id = params.id.split('-').at(-1);
         const menu: any = await axios.get(`https://www.swiggy.com/dapi/menu/pl?page-type=REGULAR_MENU&complete-menu=true&lat=28.65200&lng=77.16630&restaurantId=${id}&catalog_qa=undefined&submitAction=ENTER`);
         console.log('menu', menu?.data?.data?.cards[4]?.groupedCard?.cardGroupMap?.REGULAR.cards);
-        setRestaurantInfo(menu?.data?.data?.cards[2]?.card?.card?.info);
-        setDiscountData(menu?.data?.data?.cards[3]?.card?.card?.gridElements?.infoWithStyle?.offers);
-        var menuCategories: any[] = menu?.data?.data?.cards[4]?.groupedCard?.cardGroupMap?.REGULAR.cards;
-        menuCategories = menuCategories.filter(m => m.title !== null && m.title !== "");
+        setRestaurantInfo(menu?.data?.data?.cards[2]?.card?.card?.info);                                // get restaurant info to show on the restaurant details card in menu
+        setDiscountData(menu?.data?.data?.cards[3]?.card?.card?.gridElements?.infoWithStyle?.offers);   //to show in slider in "deals for you"
+
+        var menuCategories: any[] = menu?.data?.data?.cards[4]?.groupedCard?.cardGroupMap?.REGULAR.cards;   // get restaurant categories
+        menuCategories = menuCategories.filter(m => m.title !== null && m.title !== "");                    // filter out categories which do not contain title (had to do this for swiggy api)
         setMenuData(menuCategories);
         setOpenMenus(Array(menuCategories.length).fill(null).map((x, i) => { return { index: i, status: true } }));
     }
@@ -143,6 +140,8 @@ const RestaurantMenu = () => {
                             </div>
                         </div>
                         <hr className='my-3 -mx-4'></hr>
+                        
+                        {/* delivery fee */}
                         <div className='flex gap-4 items-center'>
                             <MdDeliveryDining size={'30px'} />
                             <p className='text-gray-500 font-semibold text-sm -mt-1'>
@@ -209,30 +208,7 @@ const RestaurantMenu = () => {
                         menuData && menuData.map((menuCategory, index) => {
 
                             return menuCategory?.card?.card?.title ? (
-                                <SubMenu subMenuData={menuCategory?.card?.card} key={index}/>
-                                // <div className='flex flex-col' key={index}>
-                                //     <div key={index} className='flex justify-between items-center py-2'>
-                                //         <h1
-                                //             className='text-gray-900 font-extrabold text-sm font-roboto'>
-                                //             {menuCategory?.card?.card?.title} {menuCategory?.card?.card?.itemCards ? `(${menuCategory?.card?.card?.itemCards?.length})` : ''}
-                                //         </h1>
-                                //         <div className='w-8 h-8 cursor-pointer' onClick={() => handleToggleMenuCategory(index)}>
-                                //             {openMenus[index].status ?
-                                //                 <IoIosArrowUp className=' text-lg ' /> :
-                                //                 <IoIosArrowDown className=' text-lg ' />
-                                //             }
-                                //         </div>
-                                //     </div>
-                                //     {
-                                //         openMenus[index].status ?
-                                //             <MenuCategories
-                                //                 itemCards={menuCategory?.card?.card?.itemCards}
-                                //                 categories={menuCategory?.card?.card?.categories}
-                                //                 index={index}
-                                //             /> : null
-                                //     }
-                                //     <div className='w-[110%] -ml-4 h-4 bg-[#F2F2F3] '></div>         {/* thick hr between categories  */}
-                                // </div>
+                                <MenuCategories subMenuData={menuCategory?.card?.card} key={index}/>
                             ) : null
                         })
                     }

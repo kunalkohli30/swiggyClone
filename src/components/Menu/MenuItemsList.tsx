@@ -1,14 +1,12 @@
-import React from 'react'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { byPrefixAndName } from '@awesome.me/kit-KIT_CODE/icons'
-import vegIcon from '../assets/icons8-veg-48.png';
-import nonVegIcon from '../assets/icons8-non-veg-50.png';
+import vegIcon from '../../assets/icons8-veg-48.png';
+import nonVegIcon from '../../assets/icons8-non-veg-50.png';
 import { faIndianRupeeSign } from '@fortawesome/free-solid-svg-icons';
 
 const MenuItemsList = ({ itemCards }) => {
 
     const fetchSwiggyImagesDomainPath = "https://media-assets.swiggy.com/swiggy/image/upload/";
-    // console.log('menuItems rendered. itemCards', itemCards ? itemCards[0]?.card?.info?.itemAttribute?.vegClassifier : null);
+
     return (
         <div className='pt-2'>
             {itemCards && itemCards?.length &&

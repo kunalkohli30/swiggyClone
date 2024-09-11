@@ -5,7 +5,7 @@ import './App.css'
 import Navbar from './components/Navbar'
 import Body from './components/Body'
 import { Route, Routes } from 'react-router-dom'
-import RestaurantMenu from './components/RestaurantMenu'
+import RestaurantMenu from './components/Menu/RestaurantMenu'
 
 function App() {
   const [count, setCount] = useState(0)

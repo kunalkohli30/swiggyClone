@@ -7,12 +7,16 @@ export default {
   theme: {
     fontFamily: {
       'display': ['Poppins'],
-      'cabin' : ['Cabin'],
-      'roboto' : ['Roboto']
+      'cabin': ['Cabin'],
+      'roboto': ['Roboto']
     },
     extend: {
       aspectRatio: {
         '4/3': '5 / 3',
+      },
+      transitionProperty: {
+        'height': 'height',
+        'spacing': 'margin, padding',
       }
     },
   },
