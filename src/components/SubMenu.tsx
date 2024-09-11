@@ -1,6 +1,7 @@
 import React, { useState } from 'react'
 import { IoIosArrowDown, IoIosArrowUp } from 'react-icons/io';
 import MenuCategories from './MenuCategories';
+import MenuItemsList from './MenuItemsList';
 
 const SubMenu = ({ subMenuData }) => {
 
@@ -22,12 +23,20 @@ const SubMenu = ({ subMenuData }) => {
                 </div>
             </div>
             {
-                isOpen ?
-                    <MenuCategories
-                        itemCards={subMenuData?.itemCards}
-                        categories={subMenuData?.categories}
-                        index={0}
-                    /> : null
+                // isOpen ?
+                //     <MenuCategories
+                //         itemCards={subMenuData?.itemCards}
+                //         categories={subMenuData?.categories}
+                //         index={0}
+                //     /> : null
+
+                isOpen &&
+                    subMenuData?.categories && subMenuData?.categories?.length ?
+                    subMenuData?.categories?.map((subCategory, subCategoryIndex) =>
+                        <MenuCategories subCategory={subCategory} key={subCategoryIndex} />
+                    )
+                    :
+                    <MenuItemsList itemCards={subMenuData?.itemCards} />
             }
             <div className='w-[110%] -ml-4 h-4 bg-[#F2F2F3] '></div>         {/* thick hr between categories  */}
         </div>
