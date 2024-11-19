@@ -9,7 +9,8 @@ type Iprops = {
     //     title: string,
     //     itemCards: any[]
     // }[],
-    subCategory: any
+    subCategory: any,
+    restaurantId: number
     // index: number
 }
 
@@ -18,7 +19,7 @@ type openCategoriesType = {
     status: boolean
 }
 
-const MenuSubCategories = ({ subCategory }: Iprops) => {
+const MenuSubCategories = ({ subCategory, restaurantId }: Iprops) => {
 
     const [isOpen, setIsOpen] = useState(false);
 
@@ -37,7 +38,7 @@ const MenuSubCategories = ({ subCategory }: Iprops) => {
                     </div>
                     <hr className={isOpen ? 'w-[20%]' : 'w-full'}></hr>
                     {
-                        isOpen && <MenuItemsList itemCards={subCategory?.itemCards} />
+                        isOpen && <MenuItemsList itemCards={subCategory?.itemCards} restaurantId={restaurantId}/>
                     }
                 </div>
             </div>

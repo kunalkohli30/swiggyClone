@@ -1,0 +1,1 @@
+export const fetchSwiggyImagesDomainPath = "https://media-assets.swiggy.com/swiggy/image/upload/";

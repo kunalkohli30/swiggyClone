@@ -45,7 +45,8 @@ const RestaurantMenu = () => {
     const fetchMenu = async () => {
         const id = params.id.split('-').at(-1);
         const menu: any = await axios.get(`https://www.swiggy.com/dapi/menu/pl?page-type=REGULAR_MENU&complete-menu=true&lat=28.65200&lng=77.16630&restaurantId=${id}&catalog_qa=undefined&submitAction=ENTER`);
-        console.log('menu', menu?.data?.data?.cards[4]?.groupedCard?.cardGroupMap?.REGULAR.cards);
+        // console.log('menu', menu?.data?.data?.cards[4]?.groupedCard?.cardGroupMap?.REGULAR.cards);
+        // console.log('restaurant id: ', id);
         setRestaurantInfo(menu?.data?.data?.cards[2]?.card?.card?.info);                                // get restaurant info to show on the restaurant details card in menu
         setDiscountData(menu?.data?.data?.cards[3]?.card?.card?.gridElements?.infoWithStyle?.offers);   //to show in slider in "deals for you"
 
@@ -86,7 +87,7 @@ const RestaurantMenu = () => {
 
 
     // console.log('del fee: ', restaurantInfo?.expectationNotifiers && restaurantInfo?.expectationNotifiers[0]?.enrichedText.split('|')[1]);
-    console.log('restaurant menu rendered')
+    // console.log('restaurant menu rendered')
     return (
         <div className='w-full '>
             <div className="w-[55%]  mx-auto pt-8 ">
@@ -208,7 +209,7 @@ const RestaurantMenu = () => {
                         menuData && menuData.map((menuCategory, index) => {
 
                             return menuCategory?.card?.card?.title ? (
-                                <MenuCategories subMenuData={menuCategory?.card?.card} key={index}/>
+                                <MenuCategories subMenuData={menuCategory?.card?.card} key={index} restaurantId={params.id.split('-').at(-1)}/>
                             ) : null
                         })
                     }

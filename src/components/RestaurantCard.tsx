@@ -29,7 +29,7 @@ const RestaurantCard = ({ restaurantData, usedFrom }: iProps) => {
     return (
 
         <Link to={`/restaurantMenu/${restaurantMenuPath}-${restaurantData?.info?.id}`}>
-            <div className='w-[100%] hover:scale-95 cursor-pointer'>
+            <div className='w-[100%] hover:scale-95 cursor-pointer z-10 relative'>
                 <div className='relative w-full '>   {/* div for image and discount */}
                     <img
                         key={restaurantData?.info.id}

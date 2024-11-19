@@ -3,7 +3,7 @@ import { IoIosArrowDown, IoIosArrowUp } from 'react-icons/io';
 import MenuItemsList from './MenuItemsList';
 import MenuSubCategories from './MenuSubCategories';
 
-const MenuCategories = ({ subMenuData }) => {
+const MenuCategories = ({ subMenuData, restaurantId }) => {
 
     const [isOpen, setIsOpen] = useState(true);
 
@@ -29,10 +29,10 @@ const MenuCategories = ({ subMenuData }) => {
                         {
                             subMenuData?.categories && subMenuData?.categories?.length ?
                                 subMenuData?.categories?.map((subCategory, subCategoryIndex) =>
-                                    <MenuSubCategories subCategory={subCategory} key={subCategoryIndex} />     //display subcategories if present
+                                    <MenuSubCategories subCategory={subCategory} key={subCategoryIndex} restaurantId={restaurantId}/>     //display subcategories if present
                                 )
                                 :
-                                <MenuItemsList itemCards={subMenuData?.itemCards} />                        // else display menu items
+                                <MenuItemsList itemCards={subMenuData?.itemCards} restaurantId={restaurantId}/>                        // else display menu items
                         }
                     </div>
                 )
