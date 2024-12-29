@@ -1,14 +1,56 @@
 import React, { useEffect, useState } from 'react'
 import restaurant from '../interfaces/restaurant';
 import RestaurantCard from './RestaurantCard';
+import { RxCross2 } from 'react-icons/rx';
+import { useDispatch, useSelector } from 'react-redux';
+import { updateFilter } from '../utils/filterSlice';
+import { RestaurantDto } from '../interfaces/apiModels/RestaurantList';
+import { useAppSelector } from '../utils/hooks';
 
-const DeliveringRestaurants = ({ data }: { data: any | undefined }) => {
+const DeliveringRestaurants = ({ data, restaurantLis }: { data: any | undefined, restaurantLis: RestaurantDto[] }) => {
 
-    const [restaurantList, setRestaurantList] = useState<restaurant[]>([]);
+    // const [restaurantList, setRestaurantList] = useState<restaurant[]>([]);
 
-    useEffect(() => {
-        setRestaurantList(data?.data?.data?.cards[1].card.card?.gridElements?.infoWithStyle?.restaurants);
-    }, [data]);
+    // const [selectedFilters, setSelectedFilters] = useState([] as string[]);
+
+    const selectedFilters = useAppSelector(state => state.filterSlice.selectedFilters);
+    const dispatch = useDispatch();
+
+    // useEffect(() => {
+    //     setRestaurantList(data?.data?.data?.cards[1].card.card?.gridElements?.infoWithStyle?.restaurants);
+    // }, [data]);
+
+
+    const filterOptions = [
+        {
+            'filterId': 'ratingAbove4',
+            'name': 'Ratings 4.0+'
+        },
+        {
+            'filterId': 'pureVeg',
+            'name': 'PureVeg'
+        },
+        {
+            'filterId': 'under300',
+            'name': 'Less than Rs.300'
+        },
+        {
+            'filterId': '300to600',
+            'name': 'Rs.300 - Rs.600'
+        },
+        {
+            'filterId': 'fastDelivery',
+            'name': 'Fast Delivery'
+        },
+    ]
+
+    const toggleFilterSelection = (filterId: string) => {
+        dispatch(updateFilter(filterId));
+        // if (selectedFilters.includes(filterId))
+        //     setSelectedFilters(selectedFilters.filter(id => id != filterId));
+        // else
+        //     setSelectedFilters([...selectedFilters, filterId]);
+    }
 
     return (
         <div>
@@ -18,13 +60,27 @@ const DeliveringRestaurants = ({ data }: { data: any | undefined }) => {
                         Top restaurant chains in Delhi
                     </h1>
                 </div>
+                <div className='flex gap-3 mb-6'>
+                    {
+                        filterOptions.map(filter => (
+                            <button key={filter.filterId}
+                                className={`px-3 py-1 w-fit rounded-3xl font-cabin font-semibold text-sm shadow-md flex items-center gap-2
+                                    ${selectedFilters?.includes(filter.filterId) ? 'border-gray-800 border-[1px] bg-gray-300' : 'border-2 border-gray-200'}`}
+                                onClick={() => toggleFilterSelection(filter.filterId)}
+                            >
+                                {filter.name}
+                                {selectedFilters?.includes(filter.filterId) ? <RxCross2 className='text-lg' /> : null}
+                            </button>
+                        ))
+                    }
+                </div>
                 <div>
                     <div  >
                         <div className={`grid  grid-cols-1 md:grid-cols-3 lg:grid-cols-4 grid-flow-row gap-5`}>
                             {
-                                restaurantList?.map(item => (
-                                    <div className='' key={item?.info?.id}>
-                                        <RestaurantCard restaurantData={item} key={item?.info?.id} usedFrom={2} />
+                                restaurantLis?.map(item => (
+                                    <div className='' key={item?.id}>
+                                        <RestaurantCard restaurantData={item} key={item?.id} usedFrom={2} />
                                     </div>
                                 ))
                             }

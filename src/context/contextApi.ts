@@ -1,11 +1,11 @@
 import React, { createContext, Dispatch } from "react";
 
 export interface cartItemType  {
-    foodId: string,
-    restaurantId: string,
+    foodId: number,
+    foodItemName: string,
+    restaurantId: number,
     quantity: number,
     totalPrice: number,
-    name: string,
     image: string,
     isVeg: boolean
 }

@@ -2,84 +2,138 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import vegIcon from '../../assets/icons8-veg-48.png';
 import nonVegIcon from '../../assets/icons8-non-veg-50.png';
 import { faIndianRupeeSign } from '@fortawesome/free-solid-svg-icons';
-import { useContext, useEffect, useState } from 'react';
-import { cartContext, cartItemType } from '../../context/contextApi';
-import { fetchSwiggyImagesDomainPath } from '../../StandardConstants';
+import { useState } from 'react';
+import { cartItemType } from '../../context/contextApi';
 import PlusMinusQuantityBtn from '../PlusMinusQuantityBtn';
 import ItemsAlreadyInCartPopup from './ItemsAlreadyInCartPopup';
 import { useDispatch, useSelector } from 'react-redux';
-import { addToCart, setRestaurantInfo } from '../../utils/cartSlice';
+import { addToCart, resInfo, setCartItemData, setRestaurantInfo, updateQuantityInState } from '../../utils/cartSlice';
+import { FoodDto, RestaurantDto } from '../../interfaces/apiModels/RestaurantList';
+import { useCookies } from 'react-cookie';
+import { UpdateCartModel } from '../../interfaces/apiModels/CartDtos';
+import axiosInstance from '../../config/AxiosInstance';
+import { AxiosError } from 'axios';
+import { useAppSelector } from '../../utils/hooks';
 
-const MenuItemsList = ({ itemCards, restaurantId }) => {
+
+type iProps = {
+    itemCards: FoodDto[],
+    restaurantData: RestaurantDto
+}
+
+const MenuItemsList = ({ itemCards, restaurantData }: iProps) => {
 
     const [showPopup, setShowPopup] = useState(false);
-    const [itemToAddToCartAfterPopupIsClosed, setItemToAddToCartAfterPopupIsClosed] = useState(null);
+    const [itemToAddToCartAfterPopupIsClosed, setItemToAddToCartAfterPopupIsClosed] = useState<FoodDto | null>(null);
 
-    const cartData = useSelector(state => state.cartSlice.cartItems);
-    const resInfo = useSelector(state => state.cartSlice.resInfo);
+    const cartData = useAppSelector(state => state.cartSlice.cartItems);
+    const resInfo = useAppSelector(state => state.cartSlice.resInfo);
+
+    const [cookies] = useCookies(['auth_token', 'refresh_token']);
+    const isLoggedIn = useAppSelector(state => state.loginSlice.isLoggedIn);
+    const authToken = cookies.auth_token;
 
     const dispatch = useDispatch();
 
+    const handleAddtoCart = (foodItem: FoodDto) => {
 
-    const handleAddtoCart = item => {
-
-        if (resInfo?.restaurantId !== '' && resInfo?.restaurantId !== restaurantId) {       //If an item from different restaurant, open popup 
+        console.log('test', resInfo?.restaurantId, restaurantData.id)
+        if (resInfo !== null && resInfo?.restaurantId !== restaurantData.id) {       //If an item from different restaurant, open popup 
             setShowPopup(true);
-            setItemToAddToCartAfterPopupIsClosed(item);                                     // Sets the item to be added to cart when popup is closed with yes 
-        } else {                                                
-            addItemToCart(item);        // if another item is ordered from same restaurant, just add it to cart
+            setItemToAddToCartAfterPopupIsClosed(foodItem);                                     // Sets the item to be added to cart when popup is closed with yes 
+        } else {
+            addItemToCart(foodItem);        // if another item is ordered from same restaurant, just add it to cart
         }
     }
 
-    const addItemToCart = item => {
-        if (resInfo?.restaurantId === '')           // if resInfo.restaurantId is blank then set it to current restaurant's id
-            dispatch(setRestaurantInfo({
-                resInfo: {
-                    restaurantId: restaurantId
-                }
-            }))
-        dispatch(addToCart({
-            cartItem: {
-                foodId: item?.card?.info?.id,
-                restaurantId: restaurantId,     //couldnt find in swiggy api
+    const addItemToCart = async (foodItem: FoodDto | null) => {
+        console.log('addtocart', foodItem, resInfo);
+
+        if (resInfo === null) {          // if resInfo.restaurantId is blank then set it to current restaurant's id
+            console.log('inside if', restaurantData, resInfo);
+            dispatch(setRestaurantInfo(
+                {
+                    restaurantId: restaurantData.id,
+                    restaurantName: restaurantData.name,
+                    areaName: restaurantData.areaName,
+                    image: restaurantData.imageId
+                } as resInfo
+            ))
+        }
+
+
+
+        if (isLoggedIn) {
+
+            if (resInfo.restaurantId !== foodItem?.restaurantId) {
+                // clear the cart
+                await clearCart();
+            }
+
+            axiosInstance.post(process.env.BACKEND_URL + "api/cart/cartItem", {
+                foodId: foodItem?.id,
                 quantity: 1,
-                totalPrice: (item?.card?.info?.price | item?.card?.info?.defaultPrice) / 100,
-                name: item?.card?.info?.name,
-                image: item?.card?.info?.imageId,
-                isVeg: item?.card?.info?.itemAttribute?.vegClassifier === "VEG"
-            } as cartItemType
-        }))
+                operation: "ADD"
+            } as UpdateCartModel
+            ).then(response => {
+                const data = response.data;
+                dispatch(setCartItemData(data));
+            }).catch((error: AxiosError) => {
+                console.log('add item to cart api failed', error);
+                if (error.status === 409) {
+
+                }
+            })
+        } else {
+
+            if (foodItem) {
+                dispatch(updateQuantityInState({
+                    foodId: foodItem?.id,
+                    restaurantId: restaurantData.id,     //couldnt find in swiggy api
+                    quantity: 1,
+                    totalPrice: foodItem?.price ? foodItem.price / 100 : 0,
+                    foodItemName: foodItem?.name,
+                    image: foodItem?.imageId,
+                    isVeg: foodItem?.vegetarian,
+                    operation: 'ADD'
+                }))
+            }
+        }
     }
 
-    const showAddButton = item => {
-        if (!cartData || cartData.filter((cartItem: cartItemType) => cartItem.foodId === item?.card?.info?.id).length === 0)
+    const clearCart = async () => {
+        await axiosInstance.delete("/api/cart/clear");
+    }
+
+    const showAddButton = (foodItem: FoodDto) => {
+        if (!cartData || cartData.filter((cartItem: cartItemType) => cartItem.foodId === foodItem?.id).length === 0)
             return true;
     }
 
     return (
         <div className='pt-2'>
             {itemCards && itemCards?.length &&
-                itemCards?.map((item, index) => (
+                itemCards?.map((foodItem, index) => (
                     <div key={index} >
                         <div className='flex justify-between'>
                             <div className='flex flex-col w-3/4' >
                                 <img
                                     className='w-4 h-4'
-                                    src={item?.card?.info?.itemAttribute?.vegClassifier === "NONVEG" ? nonVegIcon : vegIcon}
+                                    src={foodItem.vegetarian ? vegIcon : nonVegIcon}
                                 />
-                                <p className='font-bold text-[#414448] '>{item?.card?.info?.name}</p>
+                                <p className='font-bold text-[#414448] '>{foodItem?.name}</p>
                                 <div className='flex font-semibold font-roboto tracking-tighter'>
                                     <FontAwesomeIcon icon={faIndianRupeeSign} className='text-xs mt-[5px] pr-[2px]' />{
-                                        <p className='text-gray-900 text-sm'>{(item?.card?.info?.price | item?.card?.info?.defaultPrice) / 100}</p>
+                                        <p className='text-gray-900 text-sm'>{foodItem?.price / 100}</p>
                                     }
                                 </div>
                                 <div className='pt-2'>
-                                    <p className='text-gray-500 text-xs font-cabin'>{item?.card?.info?.description}</p>
+                                    <p className='text-gray-500 text-xs font-cabin'>{foodItem?.description}</p>
                                 </div>
                             </div>
                             <div className=' mb-6 relative'>
                                 <img                                                        //food items image 
-                                    src={fetchSwiggyImagesDomainPath + item?.card?.info?.imageId}
+                                    src={foodItem?.imageId}
                                     className='w-32 h-32 rounded-2xl  z-10 relative'
                                 />
                                 <div className='border-2 border-slate-200 mx-auto w-[70%]  py-1
@@ -87,14 +141,14 @@ const MenuItemsList = ({ itemCards, restaurantId }) => {
                                                  bg-white z-10 relative rounded-xl font-extrabold text-green-600 text-sm tracking-tighter font-display'
                                 >
                                     {
-                                        showAddButton(item) ?
-                                            <p onClick={() => handleAddtoCart(item)}>ADD</p> :
+                                        showAddButton(foodItem) ?
+                                            <p onClick={() => handleAddtoCart(foodItem)}>ADD</p> :
                                             <PlusMinusQuantityBtn
-                                                foodId={item?.card?.info?.id}
-                                                imageId={item?.card?.info?.imageId}
-                                                name={item?.card?.info?.name}
-                                                price={(item?.card?.info?.price | item?.card?.info?.defaultPrice) / 100}
-                                                isVeg={item?.card?.info?.itemAttribute?.vegClassifier === "VEG"}
+                                                foodId={foodItem?.id}
+                                                image={foodItem?.imageId}
+                                                name={foodItem?.name}
+                                                totalPrice={foodItem?.price / 100}
+                                                isVeg={foodItem?.vegetarian}
                                             />
                                     }
                                 </div>

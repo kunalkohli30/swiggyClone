@@ -20,6 +20,9 @@ export default {
       transitionProperty: {
         'height': 'height',
         'spacing': 'margin, padding',
+      },
+      screens: {
+        'xs': '450px'
       }
     },
   },

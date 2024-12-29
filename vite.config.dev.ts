@@ -6,7 +6,8 @@ export default defineConfig({
   plugins: [react()],
   define: {
     'process.env': {
-      BACKEND_URL: 'http://prod/'
+        BACKEND_URL: 'http://localhost:9000/',
+        GOOGLE_MAPS_API_KEY: 'AIzaSyBuccx-DCWnOr0ww2kqWvsgxaDdpj9avxA'
     }
-  }
+}
 })

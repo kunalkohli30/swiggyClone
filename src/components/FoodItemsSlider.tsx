@@ -1,18 +1,20 @@
-import axios from 'axios'
 import { FaArrowRight, FaArrowLeft } from "react-icons/fa";
+import { useEffect, useRef, useState } from 'react'
+import axiosInstance from "../config/AxiosInstance";
+const FoodItemsSlider = () => {
 
-
-import React, { useEffect, useRef, useState } from 'react'
-const FoodItemsSlider = ({data}: {data: any | undefined}) => {
-
-    const [foodTypesList, setFoodTypesList] = useState<{ imageId: string | undefined, id: string }[]>([]);
+    const [foodTypesList, setFoodTypesList] = useState<{ name: string, imageId: string | undefined, id: string }[]>([]);
     const [sliderPosition, setSliderPosition] = useState(0);
     const sliderRef = useRef<HTMLDivElement>(null);
 
     useEffect(() => {
-        console.log('foods item slider ue ');
-        setFoodTypesList(data?.data?.data?.cards[0]?.card?.card?.imageGridCards?.info);
-    }, [data]);
+        const fetchFoodTypesList = async () => {
+            const foodTypesResponse = await axiosInstance.get("/api/public/food/types");
+            setFoodTypesList(foodTypesResponse.data);
+
+        }
+        fetchFoodTypesList();
+    }, []);
 
     const handlePrev = () => {
         const left = sliderRef.current?.scrollLeft;
@@ -31,7 +33,7 @@ const FoodItemsSlider = ({data}: {data: any | undefined}) => {
                 behavior: 'smooth'
             });
         }
-        console.log('scrollWidth: ', sliderRef.current?.scrollWidth, 'current', sliderRef.current?.scrollLeft);
+        // console.log('scrollWidth: ', sliderRef.current?.scrollWidth, 'current', sliderRef.current?.scrollLeft);
     }
     const saveScrollPosition = () => {
         const scrollLeft = sliderRef?.current?.scrollLeft;
@@ -57,8 +59,8 @@ const FoodItemsSlider = ({data}: {data: any | undefined}) => {
                         {
                             foodTypesList?.map(item => (
                                 <img
-                                  key={item?.id}
-                                    src={`https://media-assets.swiggy.com/swiggy/image/upload/${item?.imageId}`}
+                                    key={item?.id}
+                                    src={item?.imageId}
                                     className='w-40'
                                 />
                             ))

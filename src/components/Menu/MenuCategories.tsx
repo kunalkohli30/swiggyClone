@@ -2,8 +2,14 @@ import React, { useState } from 'react'
 import { IoIosArrowDown, IoIosArrowUp } from 'react-icons/io';
 import MenuItemsList from './MenuItemsList';
 import MenuSubCategories from './MenuSubCategories';
+import { MenuDto, RestaurantDto } from '../../interfaces/apiModels/RestaurantList';
 
-const MenuCategories = ({ subMenuData, restaurantId }) => {
+type iProps = {
+    subMenuData: MenuDto,
+    restaurantData: RestaurantDto
+}
+
+const MenuCategories = ({ subMenuData, restaurantData }: iProps) => {
 
     const [isOpen, setIsOpen] = useState(true);
 
@@ -13,7 +19,7 @@ const MenuCategories = ({ subMenuData, restaurantId }) => {
             <div className='flex justify-between items-center py-2'>
                 <h1
                     className='text-gray-900 font-extrabold text-sm font-roboto'>
-                    {subMenuData?.title} {subMenuData?.itemCards ? `(${subMenuData?.itemCards?.length})` : ''}
+                    {subMenuData?.category} {subMenuData?.foodItems ? `(${subMenuData?.foodItems?.length})` : ''}
                 </h1>
                 <div className='w-8 h-8 cursor-pointer' onClick={() => setIsOpen(prevVal => !prevVal)}>
                     {isOpen ?
@@ -27,12 +33,17 @@ const MenuCategories = ({ subMenuData, restaurantId }) => {
                 (
                     <div className='duration-500'>
                         {
-                            subMenuData?.categories && subMenuData?.categories?.length ?
-                                subMenuData?.categories?.map((subCategory, subCategoryIndex) =>
-                                    <MenuSubCategories subCategory={subCategory} key={subCategoryIndex} restaurantId={restaurantId}/>     //display subcategories if present
-                                )
-                                :
-                                <MenuItemsList itemCards={subMenuData?.itemCards} restaurantId={restaurantId}/>                        // else display menu items
+                            subMenuData?.foodItems && subMenuData?.foodItems?.length ?
+                                <MenuItemsList itemCards={subMenuData?.foodItems} restaurantData={restaurantData}
+                                /> :
+                                null
+                            // else display menu items
+                            // subMenuData?.categories && subMenuData?.categories?.length ?
+                            //     subMenuData?.categories?.map((subCategory, subCategoryIndex) =>
+                            //         <MenuSubCategories subCategory={subCategory} key={subCategoryIndex} restaurantId={restaurantId}/>     //display subcategories if present
+                            //     )
+                            //     :
+                            //     <MenuItemsList itemCards={subMenuData?.itemCards} restaurantId={restaurantId}/>                        // else display menu items
                         }
                     </div>
                 )

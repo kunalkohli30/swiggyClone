@@ -2,21 +2,23 @@ import React, { useEffect, useRef, useState } from 'react'
 import { FaArrowLeft, FaArrowRight } from 'react-icons/fa'
 import restaurant from '../interfaces/restaurant';
 import RestaurantCard from './RestaurantCard';
+import { RestaurantDto } from '../interfaces/apiModels/RestaurantList';
 
 
-const TopRestaurants = ({ data }: { data: any | undefined }) => {
+const TopRestaurants = ({ data, restaurantLis }: { data: any | undefined, restaurantLis: RestaurantDto[] }) => {
 
-    const [restaurantList, setRestaurantList] = useState<restaurant[]>([]);
+    // const [restaurantList, setRestaurantList] = useState<restaurant[]>([]);
+    // const [restaurantLis, setRestaurantLis] = useState<Res[]>([]);
     const [sliderPosition, setSliderPosition] = useState(0);
     const sliderRef = useRef<HTMLDivElement>(null);
 
-    useEffect(() => {
-        setRestaurantList(data?.data?.data?.cards[1].card.card?.gridElements?.infoWithStyle?.restaurants);
-    }, [data]);
+    // useEffect(() => {
+    //     setRestaurantList(data?.data?.data?.cards[1].card.card?.gridElements?.infoWithStyle?.restaurants);
+    // }, [data]);
 
-    useEffect(() => {
-        console.log('restaurantList', restaurantList);
-    }, [restaurantList]);
+    // useEffect(() => {
+    //     // console.log('restaurantList', restaurantList);
+    // }, [restaurantList]);
 
     const saveScrollPosition = () => {
         const scrollLeft = sliderRef?.current?.scrollLeft;
@@ -49,8 +51,8 @@ const TopRestaurants = ({ data }: { data: any | undefined }) => {
                 <div className={`overflow-x-auto no-scrollbar `} ref={sliderRef} onScroll={saveScrollPosition}>
                     <div className={`flex  duration-300 gap-5 `}>
                         {
-                            restaurantList?.map(item => (
-                                <RestaurantCard restaurantData={item} key={item?.info?.id} usedFrom={1}/>
+                            restaurantLis?.map(item => (
+                                <RestaurantCard restaurantData={item} key={item?.id} usedFrom={1}/>
                             ))
                         }
                     </div>

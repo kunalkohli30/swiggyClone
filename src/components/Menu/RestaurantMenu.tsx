@@ -1,14 +1,15 @@
 import axios from 'axios'
 import { useEffect, useRef, useState } from 'react'
 import { IconContext } from 'react-icons'
-import {  FaStar } from 'react-icons/fa'
+import { FaStar } from 'react-icons/fa'
 import { GoDotFill } from 'react-icons/go';
 import { MdDeliveryDining } from 'react-icons/md';
 import { Link, useParams } from 'react-router-dom'
 import DealsCard from './DealsCard';
-import {IoMdArrowBack } from 'react-icons/io';
+import { IoMdArrowBack } from 'react-icons/io';
 import { IoArrowForwardSharp, IoSearchOutline } from 'react-icons/io5';
 import MenuCategories from './MenuCategories';
+import { MenuDto, OfferDto, RestaurantDto } from '../../interfaces/apiModels/RestaurantList';
 
 type params = {
     id: number
@@ -30,30 +31,112 @@ type openMenuType = {
 const RestaurantMenu = () => {
 
     const topDealsSliderRef = useRef<HTMLDivElement>(null);
-    const [restaurantInfo, setRestaurantInfo] = useState<any>([]);
-    const [menuData, setMenuData] = useState<any[]>([]);
-    const [discountData, setDiscountData] = useState<discountData[]>([]);
+    const [restaurantInfo, setRestaurantInfo] = useState<RestaurantDto>([]);
+    const [menuData, setMenuData] = useState<MenuDto[]>([]);
+    const [discountData, setDiscountData] = useState<OfferDto[]>([]);
     const [sliderPosition, setSliderPosition] = useState(0);
     const [openMenus, setOpenMenus] = useState<openMenuType[]>([]);
 
     const params = useParams() as { id: string };
+    const id = params.id.split('-').at(-1);
 
     useEffect(() => {
+        fetchRestaurantData();
         fetchMenu();
+        fetchOffers();
     }, [])
 
-    const fetchMenu = async () => {
-        const id = params.id.split('-').at(-1);
-        const menu: any = await axios.get(`https://www.swiggy.com/dapi/menu/pl?page-type=REGULAR_MENU&complete-menu=true&lat=28.65200&lng=77.16630&restaurantId=${id}&catalog_qa=undefined&submitAction=ENTER`);
-        // console.log('menu', menu?.data?.data?.cards[4]?.groupedCard?.cardGroupMap?.REGULAR.cards);
-        // console.log('restaurant id: ', id);
-        setRestaurantInfo(menu?.data?.data?.cards[2]?.card?.card?.info);                                // get restaurant info to show on the restaurant details card in menu
-        setDiscountData(menu?.data?.data?.cards[3]?.card?.card?.gridElements?.infoWithStyle?.offers);   //to show in slider in "deals for you"
+    const fetchOffers = async () => {
+        const offers = await axios.get(process.env.BACKEND_URL + "api/public/restaurant/offers");
+        setDiscountData(offers.data);   //to show in slider in "deals for you"
+    }
 
-        var menuCategories: any[] = menu?.data?.data?.cards[4]?.groupedCard?.cardGroupMap?.REGULAR.cards;   // get restaurant categories
-        menuCategories = menuCategories.filter(m => m.title !== null && m.title !== "");                    // filter out categories which do not contain title (had to do this for swiggy api)
-        setMenuData(menuCategories);
-        setOpenMenus(Array(menuCategories.length).fill(null).map((x, i) => { return { index: i, status: true } }));
+    const fetchRestaurantData = async () => {
+        const response = await axios.get(process.env.BACKEND_URL + "api/public/restaurant/" + id);
+        setRestaurantInfo(response.data);
+    }
+
+    const fetchMenu = async () => {
+        
+        // const menu: any = await axios.get(`https://www.swiggy.com/dapi/menu/pl?page-type=REGULAR_MENU&complete-menu=true&lat=28.65200&lng=77.16630&restaurantId=${id}&catalog_qa=undefined&submitAction=ENTER`);
+        const menu = await axios.get(process.env.BACKEND_URL + "api/public/food/restaurant/" + id);
+        
+        
+        // setRestaurantInfo(menu?.data?.data?.cards[2]?.card?.card?.info);                                // get restaurant info to show on the restaurant details card in menu
+        
+
+        // var menuCategories: any[] = menu?.data?.data?.cards[4]?.groupedCard?.cardGroupMap?.REGULAR.cards;   // get restaurant categories
+        // menuCategories = menuCategories.filter(m => m.title !== null && m.title !== "");                    // filter out categories which do not contain title (had to do this for swiggy api)
+        // console.log('menu categories', menuCategories);
+        // console.log('menu categories', menuCategories[3].card.card.title, menuCategories[3].card.card.itemCards.map(item => {
+        //     const info = item.card.info;
+        //     return {
+        //         name: info.name,
+        //         description: info.description,
+        //         category: info.category,
+        //         imageId: info.imageId,
+        //         price: info.price ? info.price : info.defaultPrice,
+        //         vegetarian: info.itemAttribute.vegClassifier === "VEG"
+        //     }
+        // }));
+        // console.log('menu categories', menuCategories[2].card.card.title, menuCategories[2].card.card.itemCards.map(item => {
+        //     const info = item.card.info;
+        //     return {
+        //         name: info.name,
+        //         description: info.description,
+        //         category: info.category,
+        //         imageId: info.imageId,
+        //         price: info.price ? info.price : info.defaultPrice,
+        //         vegetarian: info.itemAttribute.vegClassifier === "VEG"
+        //     }
+        // }));
+        // console.log('menu categories', menuCategories[4].card.card.title, menuCategories[4].card.card.itemCards.map(item => {
+        //     const info = item.card.info;
+        //     return {
+        //         name: info.name,
+        //         description: info.description,
+        //         category: info.category,
+        //         imageId: info.imageId,
+        //         price: info.price ? info.price : info.defaultPrice,
+        //         vegetarian: info.itemAttribute.vegClassifier === "VEG"
+        //     }
+        // }));
+        // console.log('menu categories', menuCategories[5].card.card.title, menuCategories[5].card.card.itemCards.map(item => {
+        //     const info = item.card.info;
+        //     return {
+        //         name: info.name,
+        //         description: info.description,
+        //         category: info.category,
+        //         imageId: info.imageId,
+        //         price: info.price ? info.price : info.defaultPrice,
+        //         vegetarian: info.itemAttribute.vegClassifier === "VEG"
+        //     }
+        // }));
+        // console.log('menu categories', menuCategories[6].card.card.title, menuCategories[6].card.card.itemCards.map(item => {
+        //     const info = item.card.info;
+        //     return {
+        //         name: info.name,
+        //         description: info.description,
+        //         category: info.category,
+        //         imageId: info.imageId,
+        //         price: info.price ? info.price : info.defaultPrice,
+        //         vegetarian: info.itemAttribute.vegClassifier === "VEG"
+        //     }
+        // }));
+        // console.log('menu categories', menuCategories[8].card.card.title, menuCategories[8].card.card.itemCards.map(item => {
+        //     const info = item.card.info;
+        //     return {
+        //         name: info.name,
+        //         description: info.description,
+        //         category: info.category,
+        //         imageId: info.imageId,
+        //         price: info.price ? info.price : info.defaultPrice,
+        //         vegetarian: info.itemAttribute.vegClassifier === "VEG"
+        //     }
+        // }));
+
+        setMenuData(menu.data);
+        setOpenMenus(Array(menuData.length).fill(null).map((x, i) => { return { index: i, status: true } }));
     }
 
     const handlePrev = () => {
@@ -81,16 +164,16 @@ const RestaurantMenu = () => {
             setSliderPosition(scrollLeft);
     }
 
-    const handleToggleMenuCategory = (index) => {
-        setOpenMenus(openMenus.map((menu, i) => i === index ? { index: i, status: !menu.status } : menu));
-    }
+    // const handleToggleMenuCategory = (index) => {
+    //     setOpenMenus(openMenus.map((menu, i) => i === index ? { index: i, status: !menu.status } : menu));
+    // }
 
 
     // console.log('del fee: ', restaurantInfo?.expectationNotifiers && restaurantInfo?.expectationNotifiers[0]?.enrichedText.split('|')[1]);
-    // console.log('restaurant menu rendered')
+    // console.log('discountData', discountData);
     return (
         <div className='w-full '>
-            <div className="w-[55%]  mx-auto pt-8 ">
+            <div className="w-[80%] md:w-[70%] lg:w-[55%]  mx-auto pt-8 ">
                 <p className='font-cabin text-[10px] text-slate-500 font-semibold'>
                     <Link to={'/'} className='hover:text-slate-700 cursor-pointer'> Home </Link> /
                     <span className='hover:text-slate-700 cursor-pointer'> {restaurantInfo?.city} </span> /
@@ -111,9 +194,9 @@ const RestaurantMenu = () => {
                                     <FaStar className=' rounded-full p-1' />
                                 </IconContext.Provider>
                             </div>
-                            <p className='-mt-1 font-bold tracking-tighter'>{`${restaurantInfo?.avgRating} (${restaurantInfo?.totalRatingsString})`}</p>
+                            <p className='-mt-1 font-bold tracking-tighter'>{`${restaurantInfo?.avgRatingString} (${restaurantInfo?.totalRatingsString})`}</p>
                             <GoDotFill size={'7px'} className='text-gray-400' />
-                            <p className='-mt-1 font-bold'>{restaurantInfo?.costForTwoMessage}</p>
+                            <p className='-mt-1 font-bold'>{restaurantInfo?.costForTwo}</p>
                         </div>
 
                         {/* Cuisines */}
@@ -135,18 +218,19 @@ const RestaurantMenu = () => {
                                         <p className='text-sm  font-roboto'>{restaurantInfo?.areaName}</p>
                                     </div>
                                     <div>
-                                        <p className='text-sm font-bold'>{restaurantInfo?.sla?.slaString}</p>
+                                        {/* <p className='text-sm font-bold'>{restaurantInfo?.sla?.slaString}</p> */}
+                                        <p className='text-sm font-bold'>25-30</p>
                                     </div>
                                 </div>
                             </div>
                         </div>
                         <hr className='my-3 -mx-4'></hr>
-                        
+
                         {/* delivery fee */}
                         <div className='flex gap-4 items-center'>
                             <MdDeliveryDining size={'30px'} />
                             <p className='text-gray-500 font-semibold text-sm -mt-1'>
-                                {restaurantInfo?.expectationNotifiers && restaurantInfo?.expectationNotifiers[0]?.enrichedText.split('|')[1]}
+                                {/* {restaurantInfo?.expectationNotifiers && restaurantInfo?.expectationNotifiers[0]?.enrichedText.split('|')[1]} */}
                             </p>
                         </div>
                     </div>
@@ -175,12 +259,12 @@ const RestaurantMenu = () => {
                                 {
                                     discountData?.map((item, index) => (
                                         <DealsCard
-                                            key={index}
+                                            key={item.id}
                                             discountData={
                                                 {
-                                                    img: item?.info?.offerLogo,
-                                                    header: item?.info?.header,
-                                                    couponCode: item?.info?.couponCode
+                                                    img: item?.offerLogo,
+                                                    header: item?.header,
+                                                    couponCode: item?.couponCode
                                                 }}
                                         />
                                     ))
@@ -208,9 +292,9 @@ const RestaurantMenu = () => {
                     {
                         menuData && menuData.map((menuCategory, index) => {
 
-                            return menuCategory?.card?.card?.title ? (
-                                <MenuCategories subMenuData={menuCategory?.card?.card} key={index} restaurantId={params.id.split('-').at(-1)}/>
-                            ) : null
+                            return (
+                                <MenuCategories subMenuData={menuCategory} key={index} restaurantData={restaurantInfo} />
+                            ) 
                         })
                     }
                 </div>
