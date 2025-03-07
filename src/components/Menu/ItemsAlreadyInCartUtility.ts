@@ -39,7 +39,7 @@ export const addItemToCart = async (cartItem: cartItemType) => {
 
     if (isLoggedIn) {
 
-        axiosInstance.post(process.env.BACKEND_URL + "api/cart/cartItem", {
+        axiosInstance.post("/api/cart/cartItem", {
             foodId: cartItem?.foodId,
             quantity: 1,
             operation: "ADD"

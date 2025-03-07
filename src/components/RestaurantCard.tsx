@@ -18,6 +18,7 @@ const RestaurantCard = ({ restaurantData, usedFrom }: iProps) => {
     //         .join('-');
     restaurantData.name = restaurantData.name.replace(" ", "-");
     restaurantData.locality = restaurantData.locality.replace(" ", "-");
+
     restaurantData.areaName = restaurantData.areaName.replace(" ", "-");
 
     const restaurantMenuPath = `${restaurantData.name}-${restaurantData.locality}-${restaurantData.locality}-${restaurantData.id}`;
@@ -34,7 +35,7 @@ const RestaurantCard = ({ restaurantData, usedFrom }: iProps) => {
 
     const discountHeader = restaurantData.discountInfo;
 
-    
+
     return (
 
         <Link to={`/restaurantMenu/${restaurantMenuPath}`}>
@@ -46,11 +47,14 @@ const RestaurantCard = ({ restaurantData, usedFrom }: iProps) => {
                         src={restaurantData.imageId}
                         className={`max-w-xl ${usedFrom === 1 ? 'w-[150px] md:w-[273px]' : 'w-full'} aspect-4/3 max-h-[180px] object-cover rounded-xl`}
                     />
-                    <div className='absolute right-0 left-0 bottom-0 h-[40px] md:h-[82px] rounded-2xl bg-gradient-to-t from-gray-950 from-20% flex items-end px-3 '>
-                        <p className='text-slate-200 font-extrabold text-sm  md:text-xl w-full  font-sans tracking-tighter'>
-                            {`${discountHeader}`}
-                        </p>
-                    </div>
+                    {
+                        <div className={`absolute right-0 left-0 bottom-0 h-[40px] md:h-[82px] rounded-2xl bg-gradient-to-t from-gray-950 ${usedFrom === 3 ? 'from-5%' : 'from-20%'} flex items-end px-3 `}>
+                            {usedFrom !== 3 && <p className='text-slate-200 font-extrabold text-sm  md:text-xl w-full  font-sans tracking-tighter'>
+                                {`${discountHeader}`}
+                            </p>
+                            }
+                        </div>
+                    }
                 </div>
 
                 <div className='flex flex-col pl-2 pt-2'>       {/* Div for restaurant name, delivery time and cuisines */}
@@ -62,7 +66,7 @@ const RestaurantCard = ({ restaurantData, usedFrom }: iProps) => {
                                     <FaStar className=' rounded-full p-1' />
                                 </IconContext.Provider>
                             </div>
-                            <p className='font-normal text-lg'>4.2</p>
+                            <p className='font-normal text-lg'>{restaurantData.avgRatingString}</p>
                         </div>
                         <GoDotFill className='text-xs' />
                         <p className='font-semibold text-lg tracking-tight font-display'>
@@ -70,11 +74,13 @@ const RestaurantCard = ({ restaurantData, usedFrom }: iProps) => {
                             25-30 mins
                         </p>
                     </div>
-                    <p
-                        className='text-slate-600 font-normal font-serif'
-                        style={cssPropertiesToRemoveOverflowingText}>
-                        {restaurantData.cuisines.join(", ")}
-                    </p>
+                    {restaurantData.cuisines && (
+                        <p
+                            className='text-slate-600 font-normal font-serif'
+                            style={cssPropertiesToRemoveOverflowingText}>
+                            {restaurantData.cuisines.join(", ")}
+                        </p>
+                    )}
                     <p className='text-slate-600 font-serif text-lg'>{restaurantData?.areaName}</p>
                 </div>
             </div>

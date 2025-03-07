@@ -27,7 +27,7 @@ export const fetchCart = createAsyncThunk<
         if (cartResponse.cartItems?.length === 0) {
             // clear cart and save cartSlice data into db
             console.log('gng for post request', g.cartSlice?.resInfo);
-            await axiosInstance.post(process.env.BACKEND_URL + 'api/cart',
+            await axiosInstance.post('/api/cart',
                 {
                     restaurantId: g.cartSlice?.resInfo?.restaurantId,
                     cartItems: g.cartSlice?.cartItems.map(item => { return { foodId: item.foodId, quantity: item.quantity } })
@@ -53,7 +53,8 @@ export const fetchCart = createAsyncThunk<
                     restaurantId: cartResponse.restaurantId,
                     quantity: item.quantity,
                     isVeg: item.veg,
-                    totalPrice: item.totalPrice
+                    totalPrice: item.totalPrice,
+                    unitPrice: item.unitPrice/100
                 } as cartItemType
             });
             dispatch(setCartData(cartItems));
@@ -68,7 +69,8 @@ const cartSlice = createSlice({
     name: "cartSlice",
     initialState: {
         cartItems: [] as cartItemType[],
-        resInfo: null as resInfo | null
+        resInfo: null as resInfo | null,
+        checkoutFees: {'deliveryFee': 50, 'deliveryTip': 20, 'gst': 35}
     },
 
     reducers: {
@@ -114,14 +116,17 @@ const cartSlice = createSlice({
                 else
                     state.cartItems = state.cartItems.map(item => item.foodId === action.payload.foodId ? { ...item, quantity: action.payload.quantity } : item);
             }
+            if(state.cartItems.length === 0)
+                state.resInfo = null;
         },
         setCartData: (state, action: PayloadAction<cartItemType[]>) => {
             state.cartItems = action.payload;
         },
-        setRestaurantInfo: (state, action: PayloadAction<resInfo>) => {
-            console.log('set resinfo', action)
+        setRestaurantInfo: (state, action: PayloadAction<resInfo | null>) => {
+            // console.log('set resinfo', action)
             state.resInfo = action.payload;
         },
+        getCheckoutFees: () => {}
     },
     extraReducers(builder) {
         builder.addCase(fetchCart.pending, (state, action) => {

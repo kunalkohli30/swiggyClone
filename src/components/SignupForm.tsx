@@ -1,18 +1,37 @@
-import React from 'react'
-import { Formik, Form, Field } from 'formik';
+import { useRef, useState } from 'react'
+import { Formik, Form, Field, FormikValues, FormikProps } from 'formik';
 import * as Yup from 'yup';
 import { MdOutlineEmail, MdOutlinePassword, MdOutlinePerson } from 'react-icons/md';
-import axios from 'axios';
 import { useDispatch } from 'react-redux';
 import { setLoggedIn, setUserData } from '../utils/userLoginSlice';
 import { toggleLogin } from '../utils/toggleSlice';
+import axiosInstance from '../config/AxiosInstance';
+import EmailConfirmationTooltip from './loginAndSignup/EmailConfirmationTooltip';
+import { signInWithEmailAndPassword } from 'firebase/auth';
+import { auth } from '../config/firebaseAuth';
 import UserType from '../interfaces/User';
+import { fetchCart } from '../utils/cartSlice';
+import { useAppDispatch } from '../utils/hooks';
 
+
+// When user fills the email, name, password and clicks submit, an OTP is sent on email id and the otp verification dialog comes up, when user enters the otp, signup method runs and user is registered
+// After registeration, login method is called and user is logged in to the application
+
+type signUpFormType = {
+    email: string;
+    fullName: string;
+    password: string;
+};
 
 const SignupForm = () => {
 
-    const dispatch = useDispatch();
+    const dispatch = useAppDispatch();
+    const [isemailVerified, setIsEmailVerified] = useState<boolean | null>(null);
+    const [showEmailConfirmationDialog, setShowEmailConfirmationDialog] = useState(false);
+    const [errorMessage, setErrorMessage] = useState("");
+    const formikRef = useRef<FormikProps<FormikValues>>(null);
 
+    // console.log('ref', formikRef.current?.values);
     const SignupSchema = Yup.object().shape({
         email: Yup.string().email('Invalid email').required('Required'),
         fullName: Yup.string()
@@ -26,9 +45,73 @@ const SignupForm = () => {
 
     });
 
-    // const handleSubmit = (e:  React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+    const sendOtpEmail = (values: FormikValues) => {
+        setShowEmailConfirmationDialog(true);
+        axiosInstance.post("/api/public/otp/generate", { email: values.email })
+            .then(response => {})
+            .catch(error => { alert('failed to send otp'); console.log('error occurred while sending otp', error) });
+    }
 
-    // }
+    const closeSliderAfterEmailConfirmation = () => {
+        dispatch(toggleLogin());
+        dispatch(setLoggedIn());
+    }
+    const emailConfirmationDialogClose = (emailVerified: boolean) => {
+        if (emailVerified) {
+            setIsEmailVerified(true);
+            login(formikRef.current?.values.email, formikRef.current?.values.password);
+        }
+        setShowEmailConfirmationDialog(false);
+    }
+
+    const doesUserExistWithEmail = async (email: string) => {
+        const response = await axiosInstance.get('/auth/validateEmail', { params: { email: email } });
+        console.log('email registered', response.data.isEmailRegistered);
+        return response.data.isEmailRegistered;
+    }
+
+    const login = (email: string, password: string) => signInWithEmailAndPassword(auth, email, password)
+        .then(async response => {
+            console.log(response.user.getIdToken);
+
+            const authToken = await response.user.getIdToken();
+            const refreshToken = response.user.refreshToken;
+
+            // Verifies the access token and sets the cookie values for access token and refresh token in cookies
+            const refresh = await axiosInstance.post("/auth/verify-token", {
+                authToken: authToken,
+                refreshToken: refreshToken
+            });
+
+            if (refresh.status === 401) {
+                // show error on frontend
+                setErrorMessage("Failed to login. Kindly retry");
+                return;
+            }
+
+            dispatch(setLoggedIn());        // to set login redux state
+            dispatch(toggleLogin());        //to close login slider
+
+            const userData = {
+                "fullName": response.user?.displayName,
+                "email": response.user?.email,
+                // "role": response.,
+                "uid": response.user?.uid,
+                "imageUrl": response.user?.photoURL,
+                "phoneNumber": response.user?.phoneNumber
+            } as UserType
+
+            console.log('refreshed response', refresh);
+
+            dispatch(setUserData({ userData: userData }));
+            dispatch(fetchCart());
+        })
+        .catch(async error => {
+            // User account created, failed to login
+            console.log(error);
+            setErrorMessage("User account created, kindly login");
+        })
+
     return (
         <div>
             <Formik
@@ -37,33 +120,16 @@ const SignupForm = () => {
                     fullName: '',
                     password: '',
                 }}
+                innerRef={formikRef}
                 validationSchema={SignupSchema}
-                onSubmit={values => {
-                    // same shape as initial values
-                    axios.post(process.env.BACKEND_URL + "auth/signup/v2", {
-                        "email": values.email,
-                        "fullName": values.fullName,
-                        "password": values.password
-                    }).then(response => {
-                        console.log('response', response);
-                        // dispatch(setAuthToken(response.data.authToken));
-                        dispatch(toggleLogin());
-                        dispatch(setLoggedIn());
-
-                        const userData = {
-                            "fullName": response.data?.fullName,
-                            "email": response.data?.email,
-                            "role": response.data?.user_role,
-                            "uid": response.data?.uid,
-                            "imageUrl": response.data?.imageUrl,
-                            "phoneNumber": response.data?.phoneNumber
-                        } as UserType
-
-                        dispatch(setUserData({ userData: userData }));
-                        
-                    }, errorResponse => {
-                        console.log('errorResponse', errorResponse);
-                    })
+                onSubmit={async values => {
+                    const userExists = await doesUserExistWithEmail(values.email);
+                    if (!userExists) {
+                        console.log('send email')
+                        sendOtpEmail(values);
+                    }
+                    else
+                        formikRef.current?.setFieldError("email", "Email already registered");
                 }}
             >
                 {({ errors, touched }) => (
@@ -81,6 +147,7 @@ const SignupForm = () => {
                                 {errors.email && touched.email ? (
                                     <div className='text-sm text-red-400'>{errors.email}</div>
                                 ) : null}
+                                {/* {emailAlreadyRegisteredMessage} */}
                             </div>
                             <div>
                                 <Field name="fullName"
@@ -118,6 +185,17 @@ const SignupForm = () => {
                     </Form>
                 )}
             </Formik>
+            {
+                <EmailConfirmationTooltip
+                    isOpen={showEmailConfirmationDialog}
+                    onClose={emailConfirmationDialogClose}
+                    values={formikRef.current?.values}
+                    emailVerificationActions={closeSliderAfterEmailConfirmation}
+                />
+            }
+            <div>
+                <p>{errorMessage ? errorMessage : null}</p>
+            </div>
         </div>
     )
 }

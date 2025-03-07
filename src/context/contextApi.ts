@@ -7,7 +7,8 @@ export interface cartItemType  {
     quantity: number,
     totalPrice: number,
     image: string,
-    isVeg: boolean
+    isVeg: boolean,
+    unitPrice: number
 }
 
 export const Visibility = createContext({visible: false, setVisible: (state: boolean) => {}});

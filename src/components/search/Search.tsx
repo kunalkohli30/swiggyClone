@@ -9,6 +9,7 @@ import { clearCart, resInfo, setCartItemData, setRestaurantInfo, updateQuantityI
 import { AxiosError } from 'axios';
 import ItemsAlreadyInCartPopup from '../Menu/ItemsAlreadyInCartPopup';
 import FoodDetailsCard from './FoodDetailsCard';
+import { IoSearch } from 'react-icons/io5';
 
 const Search = () => {
 
@@ -18,15 +19,15 @@ const Search = () => {
     const [restaurantMap, setRestaurantMap] = useState<Map<number, RestaurantDto> | null>(null);
     const [itemToAddToCartAfterPopupIsClosed, setItemToAddToCartAfterPopupIsClosed] = useState<FoodDto | null>(null);
     const [foodItemForDetailsPopup, setFoodItemForDetailsPopup] = useState<FoodDto | null>(null);
-    
+
 
     const dispatch = useAppDispatch();
 
     const { cartItems, resInfo } = useAppSelector(state => state.cartSlice);
     const isLoggedIn = useAppSelector(state => state.loginSlice.isLoggedIn);
 
-    const fetchDishes = async () => {
-        const searchResponse = await axiosInstance.get('/api/public/food/search?keyword=' + searchQuery);
+    const fetchDishes = async (query: string) => {
+        const searchResponse = await axiosInstance.get('/api/public/food/search?keyword=' + query);
         if (searchResponse.status === 200) {
             setSearchItems(searchResponse.data);
 
@@ -82,7 +83,7 @@ const Search = () => {
                 dispatch(clearCart());
             }
 
-            axiosInstance.post(process.env.BACKEND_URL + "api/cart/cartItem", {
+            axiosInstance.post("/api/cart/cartItem", {
                 foodId: foodItem?.id,
                 quantity: 1,
                 operation: "ADD"
@@ -113,50 +114,78 @@ const Search = () => {
         }
     }
 
+    const popularFoodItems = [
+        'Burger',
+        'Momos',
+        'Pizza',
+        'Rolls'
+    ];
+
+    const searchForPopularFoodItems = () => {
+        return (
+            <div className='mt-7 pl-3'>
+                <p className='font-bold font-roboto '>Order from popular Items</p>
+                <div className='-mt-1'>
+                    {popularFoodItems.map(item => (
+                        <div className='flex gap-4 items-center cursor-pointer' onClick={e => {setSearchQuery(item), fetchDishes(item)}}>
+                            <IoSearch className='text-xl text-gray-700 font-semibold' />
+                            <p className='text-gray-700 font-cabin text-lg  border-b-2 border-gray-100 py-3 w-full'>
+                                {item}
+                            </p>
+                        </div>
+                    ))}
+                </div>
+            </div>
+        )
+    }
 
     return (
-        <div className='w-[90%] md:w-[75%] xl:w-[60%] mx-auto mt-16'>
-            <FoodDetailsCard foodItem={foodItemForDetailsPopup} handleAddtoCart={handleAddtoCart}/>
+        <div className='w-[90%] md:w-[75%] xl:w-[65%] mx-auto mt-16'>
+            <FoodDetailsCard foodItem={foodItemForDetailsPopup} handleAddtoCart={handleAddtoCart} />
             <div className='w-full  mx-auto  h-screen '>
-                <div className='border-2 px-2 border-gray-400 outline-none w-full h-10 flex flex-row justify-start items-center gap-4 rounded-md'>      {/* search bar */}
+                <div className='border-[2px] px-2 border-gray-200 outline-none w-full h-12 
+                    flex flex-row justify-start items-center gap-4 rounded-md '
+                >      {/* search bar */}
                     <button onClick={() => setSearchQuery("")}><IoIosArrowBack className='text-xl text-gray-800 font-semibold' /></button>
                     <input
                         type='text'
-                        className='w-full h-full outline-none  font-roboto font-semibold text-gray-800'
+                        className='w-full h-full outline-none  font-display  font-semibold text-gray-800 
+                            placeholder:font-medium placeholder:font-cabin placeholder:text-gray-500 placeholder:text-lg '
                         placeholder='Search for restaurants and food'
                         onChange={e => setSearchQuery(e.target.value)}
                         value={searchQuery}
-                        onBlur={fetchDishes}
+                        onBlur={e => fetchDishes(e.target.value)}
                     />
                 </div>
                 <div>           {/*  search results  */}
                     {
-                        searchQuery !== "" && searchItems.length === 0 ? (
-                            <div className=' mt-10 ml-4 text-sm font-display font-semibold text-gray-800'>
-                                No match found for "{searchQuery}"
-                            </div>
-                        ) : (
-                            <div className='w-full bg-gray-100 h-full mt-6 border-t-2 border-gray-200 grid grid-cols-2 gap-5 px-4 py-4'>
-                                {
-                                    searchItems.map(foodItem => (
-                                        <div>
-                                            <FoodItemCard
-                                                foodItem={foodItem}
-                                                restaurantData={restaurantMap?.get(foodItem.restaurantId)}
-                                                quantity={getQuantity(foodItem)}
-                                                handleAddToCart={handleAddtoCart}
-                                                key={foodItem.id}
-                                                setFoodItemForDetailsPopup={setFoodItemForDetailsPopup}
-                                            />
-                                        </div>
-                                    ))
-                                }
-                            </div>
-                        )
+                        searchQuery.trim() === "" ? searchForPopularFoodItems() :
+                            searchQuery !== "" && searchItems.length === 0 ? (
+                                <div className=' mt-10 ml-4 text-sm font-display font-semibold text-gray-800'>
+                                    No match found for "{searchQuery}"
+                                </div>
+                            ) : (
+                                <div className='w-full bg-gray-100 h-full mt-6 border-t-2 border-gray-200 grid grid-cols-2 gap-5 px-4 py-4'>
+                                    {
+                                        searchItems.map(foodItem => (
+                                            <div>
+                                                <FoodItemCard
+                                                    foodItem={foodItem}
+                                                    restaurantData={restaurantMap?.get(foodItem.restaurantId)}
+                                                    quantity={getQuantity(foodItem)}
+                                                    handleAddToCart={handleAddtoCart}
+                                                    key={foodItem.id}
+                                                    setFoodItemForDetailsPopup={setFoodItemForDetailsPopup}
+                                                />
+                                            </div>
+                                        ))
+                                    }
+                                </div>
+                            )
                     }
                 </div>
             </div>
-            
+
             <ItemsAlreadyInCartPopup showPopup={showPopup} setShowPopup={setShowPopup} addItemToCart={() => addItemToCart(itemToAddToCartAfterPopupIsClosed)} />
         </div>
     )

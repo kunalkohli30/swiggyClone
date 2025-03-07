@@ -16,12 +16,12 @@ const MenuCategories = ({ subMenuData, restaurantData }: iProps) => {
     return (
 
         <div className='flex flex-col'>
-            <div className='flex justify-between items-center py-2'>
+            <div className='flex justify-between items-center py-2 cursor-pointer' onClick={() => setIsOpen(prevVal => !prevVal)}>
                 <h1
                     className='text-gray-900 font-extrabold text-sm font-roboto'>
                     {subMenuData?.category} {subMenuData?.foodItems ? `(${subMenuData?.foodItems?.length})` : ''}
                 </h1>
-                <div className='w-8 h-8 cursor-pointer' onClick={() => setIsOpen(prevVal => !prevVal)}>
+                <div className='w-8 h-8 cursor-pointer' >
                     {isOpen ?
                         <IoIosArrowUp className=' text-lg ' /> :
                         <IoIosArrowDown className=' text-lg ' />

@@ -19,7 +19,8 @@ const onRefreshed = () => {
 };
 
 const axiosInstance = axios.create({
-    baseURL: 'http://localhost:9000',
+    // baseURL: 'https://api.urbaneatsdelivery.online',
+    baseURL: 'http://localhost:8080',
     withCredentials: true, // This ensures cookies are sent with requests
 });
 
@@ -55,8 +56,8 @@ axiosInstance.interceptors.response.use(
 
                     try {
                         // Request to refresh the token
-                        const refreshResponse = await axios.post(
-                            'http://localhost:9000/auth/refresh-access-token',
+                        const refreshResponse = await axiosInstance.post(
+                            '/auth/refresh-access-token',
                             {},
                             { withCredentials: true } // Include cookies
                         );

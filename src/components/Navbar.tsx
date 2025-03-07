@@ -13,9 +13,9 @@ import { setLoggedIn, setLoggedout, setUserData } from "../utils/userLoginSlice"
 import axios from "axios";
 import UserType from "../interfaces/User";
 import { useCookies } from "react-cookie";
-import SaveDeliveryAddress from "./SaveDeliveryAddress";
 import axiosInstance from "../config/AxiosInstance";
-
+import { useAppSelector } from "../utils/hooks";
+import { motion, AnimatePresence } from 'framer-motion'
 
 
 const Navbar = () => {
@@ -64,7 +64,8 @@ const Navbar = () => {
     const cartData = useSelector(state => state.cartSlice.cartItems);
     const isLoggedIn = useSelector(state => state.loginSlice.isLoggedIn);
     const userData: UserType = useSelector(state => state.loginSlice.userData);
-
+    const showLoginSlider = useAppSelector(state => state.toggleSlice.loginToggle);
+    const [isHovered, setIsHovered] = useState(false);
 
     const dispatch = useDispatch();
     const [cookies, setCookie] = useCookies(['auth_token', 'refresh_token']);
@@ -78,6 +79,7 @@ const Navbar = () => {
 
     const logout = async () => {
 
+        console.log('logging out');
         const logoutResponse = await axiosInstance.post("/auth/logout");        // to delete the cookies
         dispatch(setLoggedout());
         console.log('auth token removed');
@@ -140,7 +142,10 @@ const Navbar = () => {
 
 
 
-                    <div className="group relative py-2">
+                    <div className="group relative py-2"
+                        onMouseEnter={() => setIsHovered(true)}
+                        onMouseLeave={() => setIsHovered(false)}
+                    >
 
                         <div className="flex items-center gap-3 md:gap-7 justify-between  bg-white px-4 cursor-pointer">
                             <div>{navItem.icon}</div>
@@ -149,22 +154,31 @@ const Navbar = () => {
                             </div>
                         </div>
 
-                        <div
-                            className="invisible absolute -left-5 z-50 flex xl:w-52 w-40 flex-col py-4 px-4  text-gray-800  group-hover:visible
-                              border-gray-400 bg-orange-300 border-2 bg-opacity-40 text-sm xl:mt-3 shadow-2xl
-                              transition-all ease-in duration-300 "
-                        >
+                        {/* :before properties generate the arrow on top */}
+                        <motion.div
+                            initial={{ opacity: 0, y: -10 }}   // Start hidden & slightly above
+                            animate={isHovered ? { opacity: 1, y: 0, scale: 1 } : { opacity: 0, y: -10, scale: 0.95 }}
+                            transition={{ duration: 0.3, ease: "easeOut" }}  // Smooth transition
+                            className="absolute invisible group-hover:visible  mt-1 bg-white shadow-lg rounded-md w-52 px-6 py-3  text-black 
+                                border-t-2 border-orange-500
+                                before:absolute before:top-0 before:left-1/2 before:-translate-x-1/2 before:-translate-y-full       
+                                before:border-[10px] before:border-transparent before:border-b-orange-500 
+                                transition-all duration-300 ">
 
-                            <div className="my-2 py-1 font-semibold  text-gray-500 hover:text-black md:mx-2 cursor-pointer">
-                                Profile
-                            </div>
-                            <div className="my-2 py-1 font-semibold text-gray-500 hover:text-black md:mx-2 cursor-pointer">
-                                Favourites
-                            </div>
-                            <div className="my-2 py-1 font-semibold text-gray-500 hover:text-black md:mx-2 cursor-pointer" onClick={logout}>
-                                Logout
-                            </div>
-                        </div>
+                            <ul className="pl-3">
+                                <Link to='/profile'>
+                                    <li className="hover:text-orange-500 cursor-pointer mt-4 text-gray-800 font-bold font-cabin">Profile</li>
+                                </Link>
+                                <Link to='/profile'>
+                                    <li className="hover:text-orange-500 cursor-pointer mt-4 text-gray-800 font-bold font-cabin">Orders</li>
+                                </Link>
+                                {/* <li className="hover:text-orange-500 cursor-pointer">Swiggy One</li> */}
+                                <Link to='/profile'>
+                                    <li className="hover:text-orange-500 cursor-pointer mt-4 text-gray-800 font-bold font-cabin">Favourites</li>
+                                </Link>
+                                <li className="hover:text-orange-500 cursor-pointer mt-4 pb-4 text-gray-800 font-bold font-cabin">Logout</li>
+                            </ul>
+                        </motion.div>
 
 
                     </div >
@@ -181,9 +195,9 @@ const Navbar = () => {
 
     return (
         <div className="relative ">
-            <LoginSlider />
+            {showLoginSlider && <LoginSlider />}
 
-            <SaveDeliveryAddress />
+            {/* <SaveDeliveryAddress /> */}
             {
                 // for slider on left side
                 <div className="w-full">
@@ -221,7 +235,7 @@ const Navbar = () => {
 
 
 
-            <div className='w-full h-20 shadow-xl flex items-center justify-center  '>
+            <div className='w-full h-20 shadow-xl flex items-center justify-center sticky top-0 bg-white z-30'>
                 <div className=' w-full sm:w-[70%] flex justify-between items-center p-3 '>
                     <div className='flex items-center'>
                         <div className='h-[80px] w-[80px]'>

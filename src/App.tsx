@@ -4,7 +4,7 @@ import Navbar from './components/Navbar'
 import Body from './components/Body'
 import { Route, Routes } from 'react-router-dom'
 import RestaurantMenu from './components/Menu/RestaurantMenu'
-import Cart from './components/Cart'
+import Cart from './components/cart/Cart'
 import { CookiesProvider, useCookies } from 'react-cookie'
 import Signin from './components/Signin'
 import Profile from './components/Profile'
@@ -17,6 +17,9 @@ import { useAppDispatch, useAppSelector } from './utils/hooks'
 import axiosInstance from './config/AxiosInstance'
 import { setLoggedIn, setUserData } from './utils/userLoginSlice'
 import UserType from './interfaces/User'
+import OrderPage from './components/Orders/OrdersPage'
+import OrdersPage from './components/Orders/OrdersPage'
+import Payment from './components/Orders/Payment'
 
 
 function App() {
@@ -110,15 +113,17 @@ function App() {
   return (
     <APIProvider apiKey={process.env.GOOGLE_MAPS_API_KEY} onLoad={() => console.log('Maps API has loaded.')}>
       <CookiesProvider>
-        <div className={visible || signInSliderVisible || showFoodDetailsCard ? 'max-h-screen overflow-hidden' : 'overflow-x-hidden '}>
+        <div className={visible || signInSliderVisible || showFoodDetailsCard ? 'max-h-screen overflow-hidden min-h-screen' : ' min-h-screen'}>
           <Routes>
             <Route path='/' element={<Navbar />} >
               <Route path='/' element={<Body />}></Route>
               <Route path='/restaurantMenu/:id' element={<RestaurantMenu />}></Route>
               <Route path='/cart' element={<Cart />}></Route>
               <Route path='/signin' element={<Signin />}></Route>
-              <Route path='/profile' element={<Profile />}></Route>
+              {/* <Route path='/profile' element={<Profile />}></Route> */}
               <Route path='/search' element={<Search />}></Route>
+              <Route path='/profile' element={<OrdersPage />}></Route>
+              <Route path='/payment' element={<Payment />}></Route>
             </Route>
             {/* <Body /> */}
           </Routes>

@@ -46,5 +46,24 @@ export type OfferDto {
     "discountPercentage": number,
     "discountAmount": number,
     "minimumOrderValue": number,
+    "maxDiscountAmount": number,
     "restaurant": number
 }
+
+export type favoriteRestaurantResponse = {
+    id: number,
+    restaurantId: number,
+    name: string,
+    locality: string,
+    areaName: string,
+    city: string,
+    costForTwo: string,
+    avgRatingString: string,
+    discountInfo: string,
+    imageId: string,
+    cuisines: string[],
+    addedToFavoritesTimestamp: string,
+    notes: string | null,
+    open: boolean
+}
+

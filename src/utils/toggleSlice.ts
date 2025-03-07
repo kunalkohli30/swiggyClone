@@ -25,7 +25,8 @@ const toggleSlice = createSlice({
             console.log('signupInSlide', state.showLoginInSlider);
             state.showLoginInSlider = false
         },
-        showAddressSlider: (state) => {
+        showAdrSlider: (state) => {
+            console.log('show address sldier')
             state.showAddressSlider = true;
         },
         hideAddressSlider: state => {
@@ -37,5 +38,5 @@ const toggleSlice = createSlice({
     }
 })
 
-export const {toggleSearchBar, toggleLogin, openLoginInSlider, openSignupInSlider, showAddressSlider, hideAddressSlider, setShowFoodDetailsCard} = toggleSlice.actions;
+export const {toggleSearchBar, toggleLogin, openLoginInSlider, openSignupInSlider, showAdrSlider, hideAddressSlider, setShowFoodDetailsCard} = toggleSlice.actions;
 export default toggleSlice.reducer

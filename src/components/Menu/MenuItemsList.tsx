@@ -38,7 +38,7 @@ const MenuItemsList = ({ itemCards, restaurantData }: iProps) => {
     const handleAddtoCart = (foodItem: FoodDto) => {
 
         console.log('test', resInfo?.restaurantId, restaurantData.id)
-        if (resInfo !== null && resInfo?.restaurantId !== restaurantData.id) {       //If an item from different restaurant, open popup 
+        if (resInfo !== null && resInfo?.restaurantId && resInfo?.restaurantId  !== restaurantData.id) {       //If an item from different restaurant, open popup 
             setShowPopup(true);
             setItemToAddToCartAfterPopupIsClosed(foodItem);                                     // Sets the item to be added to cart when popup is closed with yes 
         } else {
@@ -65,12 +65,12 @@ const MenuItemsList = ({ itemCards, restaurantData }: iProps) => {
 
         if (isLoggedIn) {
 
-            if (resInfo.restaurantId !== foodItem?.restaurantId) {
+            if (resInfo?.restaurantId !== foodItem?.restaurantId) {
                 // clear the cart
                 await clearCart();
             }
 
-            axiosInstance.post(process.env.BACKEND_URL + "api/cart/cartItem", {
+            axiosInstance.post("api/cart/cartItem", {
                 foodId: foodItem?.id,
                 quantity: 1,
                 operation: "ADD"
@@ -132,13 +132,14 @@ const MenuItemsList = ({ itemCards, restaurantData }: iProps) => {
                                 </div>
                             </div>
                             <div className=' mb-6 relative'>
-                                <img                                                        //food items image 
+                                {foodItem?.imageId && (<img                                                        //food items image 
                                     src={foodItem?.imageId}
                                     className='w-32 h-32 rounded-2xl  z-10 relative'
-                                />
-                                <div className='border-2 border-slate-200 mx-auto w-[70%]  py-1
+                                />)}
+                                <div className={`border-2 border-slate-200   py-1
+                                                ${foodItem?.imageId ? 'mx-auto w-[70%]' : 'mt-3 w-24 mr-4'}
                                                    flex items-center justify-center -mt-5
-                                                 bg-white z-10 relative rounded-xl font-extrabold text-green-600 text-sm tracking-tighter font-display'
+                                                 bg-white z-10 relative rounded-xl font-extrabold text-green-600 text-sm tracking-tighter font-display`}
                                 >
                                     {
                                         showAddButton(foodItem) ?

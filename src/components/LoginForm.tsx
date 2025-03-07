@@ -14,6 +14,9 @@ import { fetchCart } from '../utils/cartSlice';
 import { useAppDispatch } from '../utils/hooks';
 import axiosInstance from '../config/AxiosInstance';
 import { useState } from 'react';
+import { PhoneAuth } from './Recaptcha';
+import EmailConfirmationTooltip from './loginAndSignup/EmailConfirmationTooltip';
+
 
 const LoginForm = () => {
 
@@ -21,7 +24,8 @@ const LoginForm = () => {
     const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
     const dispatch = useAppDispatch();
-
+    const [isemailVerified, setIsEmailVerified] = useState<boolean | null>(null);
+    const [showEmailConfirmationDialog, setShowEmailConfirmationDialog] = useState(false);
     const SignupSchema = Yup.object().shape({
         email: Yup.string().email('Invalid email').required('Required'),
         // fullName: Yup.string()
@@ -35,8 +39,8 @@ const LoginForm = () => {
 
     });
 
-    const doesUserExistWithEmail = async (email: string) => {
-        const response = await axios.get(process.env.BACKEND_URL + 'auth/validateEmail', { params: { email: email } });
+     const doesUserExistWithEmail = async (email: string) => {
+        const response = await axiosInstance.get('/auth/validateEmail', { params: { email: email } });
         return response.data.isEmailRegistered;
     }
 
@@ -48,6 +52,7 @@ const LoginForm = () => {
             password: string;
         }>
     ) => {
+        console.log('signing in with email and password');
         signInWithEmailAndPassword(auth, email, password)
             .then(async response => {
                 console.log(response.user.getIdToken);
@@ -55,12 +60,13 @@ const LoginForm = () => {
                 const authToken = await response.user.getIdToken();
                 const refreshToken = response.user.refreshToken;
 
+                // Verifies the access token and sets the cookie values for access token and refresh token in cookies
                 const refresh = await axiosInstance.post("/auth/verify-token", {
                     authToken: authToken,
                     refreshToken: refreshToken
                 });
 
-                if(refresh.status === 401) {
+                if (refresh.status === 401) {
                     // show error on frontend
                     setErrorMessage("Failed to login. Kindly retry");
                     return;
@@ -68,8 +74,6 @@ const LoginForm = () => {
 
                 dispatch(setLoggedIn());        // to set login redux state
                 dispatch(toggleLogin());        //to close login slider
-
-                // const userDataResponse = await axios.get("/api/user/userData");
 
                 const userData = {
                     "fullName": response.user?.displayName,
@@ -80,14 +84,8 @@ const LoginForm = () => {
                     "phoneNumber": response.user?.phoneNumber
                 } as UserType
 
-                
-                // const refresh = await axiosInstance.post("/auth/verify-token", {
-                //     authToken: authToken,
-                //     refreshToken: refreshToken
-                // });
-
                 console.log('refreshed response', refresh);
-                
+
                 dispatch(setUserData({ userData: userData }));
                 dispatch(fetchCart());
             })
@@ -116,11 +114,25 @@ const LoginForm = () => {
                     "phoneNumber": response.user?.phoneNumber
                 } as UserType
 
+                const authToken = await response.user.getIdToken();
+                const refreshToken = response.user.refreshToken;
+                const refresh = await axiosInstance.post("/auth/verify-token", {
+                    authToken: authToken,
+                    refreshToken: refreshToken
+                });
+
+                if (refresh.status === 401) {
+                    // show error on frontend
+                    setErrorMessage("Failed to login. Kindly retry");
+                    return;
+                }
+                
                 dispatch(setUserData({ userData: userData }));
                 dispatch(setLoggedIn());        // to set login redux state
                 dispatch(toggleLogin());        //to close login slider
-                setCookie('auth_token', await response.user.getIdToken(), { path: '/' });
-                setCookie('refresh_token', response.user.refreshToken, { path: '/' });
+                dispatch(fetchCart());
+                // setCookie('auth_token', await response.user.getIdToken(), { path: '/' });
+                // setCookie('refresh_token', response.user.refreshToken, { path: '/' });
             })
             .catch(error => {
                 console.log('googlelogin error', error);
@@ -132,6 +144,8 @@ const LoginForm = () => {
     return (
         <div>
             <div>
+
+                {/* <PhoneAuth /> */}
                 <Formik
                     initialValues={{
                         email: '',
@@ -140,6 +154,7 @@ const LoginForm = () => {
                     validationSchema={SignupSchema}
                     onSubmit={async (values, actions) => {
                         loginWithEmailAndPassword(values.email, values.password, actions);
+                        // setShowEmailConfirmationDialog(true);
                     }}
                 >
                     {({ errors, touched }) => (
@@ -181,6 +196,7 @@ const LoginForm = () => {
                         </Form>
                     )}
                 </Formik>
+
                 <div className='flex flex-col items-center w-48 md:w-80 '>
                     <p className=' text-gray-400 font-display mt-3 cursor-pointer text-xs'>Forgot Username / Password</p>
                     <p className='mt-5 text-sm md:text-base'>Or login with</p>
@@ -191,7 +207,8 @@ const LoginForm = () => {
                     </div>
                 </div>
 
-                <div>       //error message
+                {/* //error message */}
+                <div>       
                     <p>{errorMessage ? errorMessage : null}</p>
                 </div>
             </div>
