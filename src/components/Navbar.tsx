@@ -1,21 +1,19 @@
-import { IoIosArrowDown, IoMdHelpCircleOutline } from "react-icons/io";
-import { IoBagOutline, IoCartOutline } from "react-icons/io5";
+import { IoIosArrowDown } from "react-icons/io";
+import { IoCartOutline } from "react-icons/io5";
 import { IoIosSearch } from "react-icons/io";
 import { IoPersonOutline } from "react-icons/io5";
-import { CiDiscount1, CiLocationOn } from 'react-icons/ci';
-import { Link, Navigate, Outlet, useNavigate } from "react-router-dom";
-import { useEffect, useState } from "react";
+import {  CiLocationOn } from 'react-icons/ci';
+import { Link, Outlet, useNavigate } from "react-router-dom";
+import {  useState } from "react";
 import { RxCross1 } from "react-icons/rx";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 import { toggleSearchBar, toggleLogin, openLoginInSlider } from "../utils/toggleSlice";
 import LoginSlider from "./LoginSlider";
-import { setLoggedIn, setLoggedout, setUserData } from "../utils/userLoginSlice";
-import axios from "axios";
+import {  setLoggedout } from "../utils/userLoginSlice";
 import UserType from "../interfaces/User";
-import { useCookies } from "react-cookie";
 import axiosInstance from "../config/AxiosInstance";
 import { useAppSelector } from "../utils/hooks";
-import { motion, AnimatePresence } from 'framer-motion'
+import { motion} from 'framer-motion'
 
 
 const Navbar = () => {
@@ -57,18 +55,17 @@ const Navbar = () => {
     }]
 
 
-    const [showProfileDropdown, setShowProfileDropdown] = useState(false);
+    // const [showProfileDropdown, setShowProfileDropdown] = useState(false);
 
     // const { visible, setVisible } = useContext(Visibility);
-    const visible = useSelector(state => state.toggleSlice.searchToggle);
-    const cartData = useSelector(state => state.cartSlice.cartItems);
-    const isLoggedIn = useSelector(state => state.loginSlice.isLoggedIn);
-    const userData: UserType = useSelector(state => state.loginSlice.userData);
+    const visible = useAppSelector(state => state.toggleSlice.searchToggle);
+    const cartData = useAppSelector(state => state.cartSlice.cartItems);
+    const isLoggedIn = useAppSelector(state => state.loginSlice.isLoggedIn);
+    const userData: UserType | null = useAppSelector(state => state.loginSlice.userData);
     const showLoginSlider = useAppSelector(state => state.toggleSlice.loginToggle);
     const [isHovered, setIsHovered] = useState(false);
 
     const dispatch = useDispatch();
-    const [cookies, setCookie] = useCookies(['auth_token', 'refresh_token']);
 
     const navigate = useNavigate();
 
@@ -77,9 +74,11 @@ const Navbar = () => {
         dispatch(toggleSearchBar());
     }
 
+    // @ts-ignore
     const logout = async () => {
 
         console.log('logging out');
+        // @ts-ignore
         const logoutResponse = await axiosInstance.post("/auth/logout");        // to delete the cookies
         dispatch(setLoggedout());
         console.log('auth token removed');
@@ -266,7 +265,7 @@ const Navbar = () => {
                                                     {navItem.icon}
                                                     <p className='hidden xs:block text-sm md:text-base font-semibold text-gray-600'>{navItem.name}</p>
                                                     {navItem.name === 'Cart' && cartData?.length > 0 ?
-                                                        <p className="mb-3 text-xs">{cartData.reduce((total, val) => total + val.quantity, 0)}</p> :
+                                                        <p className="mb-3 text-xs">{cartData.reduce((total, val) => total + (val?.quantity ?? 0), 0)}</p> :
                                                         null
                                                     }
                                                 </div>

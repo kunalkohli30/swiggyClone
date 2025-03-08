@@ -1,4 +1,3 @@
-import restaurant from '../interfaces/restaurant'
 import { FaStar } from 'react-icons/fa';
 import { IconContext } from 'react-icons';
 import { GoDotFill } from 'react-icons/go';
@@ -27,12 +26,8 @@ const RestaurantCard = ({ restaurantData, usedFrom }: iProps) => {
         'overflow': 'hidden',
         'display': '-webkit-box',
         'WebkitLineClamp': '1',
-        'WebkitBoxOrient': 'vertical'
+        'WebkitBoxOrient': 'vertical' as 'vertical'
     }
-
-    // const discountHeader = restaurantData?.info?.aggregatedDiscountInfoV3?.header ? restaurantData?.info?.aggregatedDiscountInfoV3?.header : '';
-    // const discountSubHeader = restaurantData?.info?.aggregatedDiscountInfoV3?.subHeader ? restaurantData?.info?.aggregatedDiscountInfoV3?.subHeader : '';
-
     const discountHeader = restaurantData.discountInfo;
 
 

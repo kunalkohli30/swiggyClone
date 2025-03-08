@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { ExistingOrderItemsDto, ExistingOrdersDto } from '../../interfaces/apiModels/OrderDto';
+import { ExistingOrdersDto } from '../../interfaces/apiModels/OrderDto';
 import OrderDetails from './OrderDetails';
 
 export interface orderItemsType {

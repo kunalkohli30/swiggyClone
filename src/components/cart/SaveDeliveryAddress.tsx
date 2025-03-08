@@ -2,18 +2,15 @@ import React, { useRef, useState } from 'react'
 import * as Yup from 'yup';
 import { RxCross1 } from 'react-icons/rx'
 import GoogleMaps from '../GoogleMaps'
-import InputWithAnimatedPlaceholder from '../InputWithAnimatedPlaceholder'
-import { Field, Form, Formik, FormikHelpers, FormikProps, FormikValues } from 'formik'
+import {  Form, Formik, FormikHelpers, FormikProps} from 'formik'
 import FormikModifiedField from '../FormikModifiedField'
 import { GoHome, GoHomeFill } from 'react-icons/go'
 import { MdErrorOutline, MdWork, MdWorkOutline } from 'react-icons/md'
 import { IoLocationOutline, IoLocationSharp } from 'react-icons/io5'
 import axios, { AxiosError } from 'axios';
-import { useCookies } from 'react-cookie';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch} from 'react-redux';
 import { hideAddressSlider } from '../../utils/toggleSlice';
 import axiosInstance from '../../config/AxiosInstance';
-import { useAppSelector } from '../../utils/hooks';
 import { AnimatePresence, motion } from "framer-motion";
 
 
@@ -59,7 +56,9 @@ const SaveDeliveryAddress = () => {
     const [addressName, setAddressName] = useState('');
     const [showAddressNameNotPresentError, setShowAddressNameNotPresentError] = useState(false);
     const [locationInValid, setLocationInValid] = useState(undefined as boolean | undefined);
+    // @ts-ignore
     const [selectedPlace, setSelectedPlace] = useState<google.maps.places.PlaceResult | null>(null);
+    // @ts-ignore
     const [addressNameAlreadyUsed, setAddressNameAlreadyUsed] = useState(false);
     const [showStaticButtons, setShowStaticButtons] = useState(true); // Controls visibility of Home & Work
 
@@ -67,7 +66,7 @@ const SaveDeliveryAddress = () => {
     const [selectedPosition, setSelectedPosition] = useState(center);
     const [userAdrString, setUserAdrString] = useState("");
 
-    const formikRef = useRef<FormikProps<Record<string, unknown>>>(null);
+    const formikRef = useRef<FormikProps<formValues> | null>(null);
 
     const dispatch = useDispatch();
 
@@ -85,7 +84,7 @@ const SaveDeliveryAddress = () => {
     ];
 
     const handleScroll = (e: React.UIEvent<HTMLDivElement, UIEvent>) => {
-        const target = e?.target;
+        const target = e?.currentTarget;
         // console.log('target', target.scrollHeight - target.scrollTop);
         // console.log('target', target.scrollTop);
         // console.log('target', target.clientHeight);
@@ -199,7 +198,7 @@ const SaveDeliveryAddress = () => {
                                                     formattedGoogleAddress: userAdrString,
                                                     addressName: addressName,
                                                     ...selectedPosition
-                                                }).then(resp => { dispatch(hideAddressSlider()); alert('Address saved'); actions.resetForm() })
+                                                }).then(_resp => { dispatch(hideAddressSlider()); alert('Address saved'); actions.resetForm() })
                                                     .catch((error: Error | AxiosError) => {
                                                         if (axios.isAxiosError(error) && error.status === 412) {
                                                             setAddressNameAlreadyUsed(true);
@@ -212,7 +211,7 @@ const SaveDeliveryAddress = () => {
                                             }}
                                             validationSchema={saveAddressSchema}
                                         >
-                                            {({ errors, touched }) => (                                             // form for address details
+                                            {({ errors }) => (                                             // form for address details
                                                 <Form>
                                                     {
                                                         Object.keys(errors).length > 0 &&

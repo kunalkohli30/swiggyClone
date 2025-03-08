@@ -1,7 +1,7 @@
-import React, { useState } from 'react'
+import  { useState } from 'react'
 import { IoIosArrowDown, IoIosArrowUp } from 'react-icons/io';
 import MenuItemsList from './MenuItemsList';
-import MenuSubCategories from './MenuSubCategories';
+
 import { MenuDto, RestaurantDto } from '../../interfaces/apiModels/RestaurantList';
 
 type iProps = {

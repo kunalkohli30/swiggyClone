@@ -1,11 +1,11 @@
-import React, { useEffect, useState } from 'react'
+import  { useEffect, useState } from 'react'
 import axiosInstance from '../../config/AxiosInstance';
-import { cartItemResponse, UpdateCartModel } from '../../interfaces/apiModels/CartDtos';
+import {  UpdateCartModel } from '../../interfaces/apiModels/CartDtos';
 import { FoodDto, RestaurantDto } from '../../interfaces/apiModels/RestaurantList';
 import { IoIosArrowBack } from 'react-icons/io';
 import FoodItemCard from './FoodItemCard';
 import { useAppDispatch, useAppSelector } from '../../utils/hooks';
-import { clearCart, resInfo, setCartItemData, setRestaurantInfo, updateQuantityInState } from '../../utils/cartSlice';
+import { clearCart, resInfoType, setCartItemData, setRestaurantInfo, updateQuantityInState } from '../../utils/cartSlice';
 import { AxiosError } from 'axios';
 import ItemsAlreadyInCartPopup from '../Menu/ItemsAlreadyInCartPopup';
 import FoodDetailsCard from './FoodDetailsCard';
@@ -72,7 +72,7 @@ const Search = () => {
                     restaurantName: restaurantData?.data.name,
                     areaName: restaurantData?.data.areaName,
                     image: restaurantData?.data.imageId
-                } as resInfo
+                } as resInfoType
             ))
         }
 
@@ -127,7 +127,7 @@ const Search = () => {
                 <p className='font-bold font-roboto '>Order from popular Items</p>
                 <div className='-mt-1'>
                     {popularFoodItems.map(item => (
-                        <div className='flex gap-4 items-center cursor-pointer' onClick={e => {setSearchQuery(item), fetchDishes(item)}}>
+                        <div className='flex gap-4 items-center cursor-pointer' onClick={() => {setSearchQuery(item), fetchDishes(item)}}>
                             <IoSearch className='text-xl text-gray-700 font-semibold' />
                             <p className='text-gray-700 font-cabin text-lg  border-b-2 border-gray-100 py-3 w-full'>
                                 {item}
@@ -172,7 +172,7 @@ const Search = () => {
                                                 <FoodItemCard
                                                     foodItem={foodItem}
                                                     restaurantData={restaurantMap?.get(foodItem.restaurantId)}
-                                                    quantity={getQuantity(foodItem)}
+                                                    quantity={getQuantity(foodItem) ?? 0}
                                                     handleAddToCart={handleAddtoCart}
                                                     key={foodItem.id}
                                                     setFoodItemForDetailsPopup={setFoodItemForDetailsPopup}

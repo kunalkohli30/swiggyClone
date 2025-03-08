@@ -1,5 +1,5 @@
 // axiosInstance.js
-import axios, { AxiosError, AxiosRequestConfig, InternalAxiosRequestConfig } from 'axios';
+import axios, { AxiosError, InternalAxiosRequestConfig } from 'axios';
 
 
 // Token refresh control variables
@@ -56,6 +56,7 @@ axiosInstance.interceptors.response.use(
 
                     try {
                         // Request to refresh the token
+                        // @ts-ignore
                         const refreshResponse = await axiosInstance.post(
                             '/auth/refresh-access-token',
                             {},

@@ -13,7 +13,7 @@ type iProps = {
     values: FormikValues | undefined,
     emailVerificationActions: () => void
 }
-export default function EmailConfirmationTooltip({ isOpen, onClose, values, emailVerificationActions }: iProps) {
+export default function EmailConfirmationTooltip({ isOpen, onClose, values }: iProps) {
     const [otp, setOtp] = useState("");
     const dispatch = useAppDispatch();
 

@@ -1,11 +1,9 @@
 import { cartItemType } from '../context/contextApi'
 import { useDispatch } from 'react-redux';
-import { setCartItemData, setRestaurantInfo, updateQuantityInState } from '../utils/cartSlice';
+import { setCartItemData, updateQuantityInState } from '../utils/cartSlice';
 import { UpdateCartModel } from '../interfaces/apiModels/CartDtos';
-import { useCookies } from 'react-cookie';
 import axiosInstance from '../config/AxiosInstance';
 import { useAppSelector } from '../utils/hooks';
-import { useEffect } from 'react';
 
 // const PlusMinusQuantityBtn = ({ foodId, price, name, imageId, isVeg }: { foodId: string, price: number, name: string, imageId: string, isVeg: boolean }) => {
 const PlusMinusQuantityBtn = (cartItem: cartItemType) => {

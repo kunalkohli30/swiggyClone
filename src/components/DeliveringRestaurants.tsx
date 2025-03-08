@@ -1,13 +1,11 @@
-import React, { useEffect, useState } from 'react'
-import restaurant from '../interfaces/restaurant';
 import RestaurantCard from './RestaurantCard';
 import { RxCross2 } from 'react-icons/rx';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
 import { updateFilter } from '../utils/filterSlice';
 import { RestaurantDto } from '../interfaces/apiModels/RestaurantList';
 import { useAppSelector } from '../utils/hooks';
 
-const DeliveringRestaurants = ({ data, restaurantLis }: { data: any | undefined, restaurantLis: RestaurantDto[] }) => {
+const DeliveringRestaurants = ({  restaurantLis }: {  restaurantLis: RestaurantDto[] }) => {
 
     // const [restaurantList, setRestaurantList] = useState<restaurant[]>([]);
 

@@ -1,21 +1,16 @@
-import { ErrorMessage, Field, Form, Formik, FormikHelpers } from 'formik';
+import { Field, FieldProps, Form, Formik, FormikHelpers } from 'formik';
 import * as Yup from 'yup';
 import { MdOutlineEmail, MdOutlinePassword } from 'react-icons/md';
 import { FaGoogle } from 'react-icons/fa';
 import { signInWithEmailAndPassword, signInWithPopup } from 'firebase/auth';
 import { auth, provider } from '../config/firebaseAuth';
-import { useDispatch } from 'react-redux';
 import { setLoggedIn, setUserData } from '../utils/userLoginSlice';
 import UserType from '../interfaces/User';
-import axios from 'axios';
 import { toggleLogin } from '../utils/toggleSlice';
-import { useCookies } from 'react-cookie';
 import { fetchCart } from '../utils/cartSlice';
 import { useAppDispatch } from '../utils/hooks';
 import axiosInstance from '../config/AxiosInstance';
 import { useState } from 'react';
-import { PhoneAuth } from './Recaptcha';
-import EmailConfirmationTooltip from './loginAndSignup/EmailConfirmationTooltip';
 
 
 const LoginForm = () => {
@@ -24,8 +19,8 @@ const LoginForm = () => {
     const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
     const dispatch = useAppDispatch();
-    const [isemailVerified, setIsEmailVerified] = useState<boolean | null>(null);
-    const [showEmailConfirmationDialog, setShowEmailConfirmationDialog] = useState(false);
+    // const [isemailVerified, setIsEmailVerified] = useState<boolean | null>(null);
+    // const [showEmailConfirmationDialog, setShowEmailConfirmationDialog] = useState(false);
     const SignupSchema = Yup.object().shape({
         email: Yup.string().email('Invalid email').required('Required'),
         // fullName: Yup.string()
@@ -39,7 +34,7 @@ const LoginForm = () => {
 
     });
 
-     const doesUserExistWithEmail = async (email: string) => {
+    const doesUserExistWithEmail = async (email: string) => {
         const response = await axiosInstance.get('/auth/validateEmail', { params: { email: email } });
         return response.data.isEmailRegistered;
     }
@@ -126,7 +121,7 @@ const LoginForm = () => {
                     setErrorMessage("Failed to login. Kindly retry");
                     return;
                 }
-                
+
                 dispatch(setUserData({ userData: userData }));
                 dispatch(setLoggedIn());        // to set login redux state
                 dispatch(toggleLogin());        //to close login slider
@@ -139,7 +134,6 @@ const LoginForm = () => {
                 console.log(error);
             })
     }
-    const [cookies, setCookie] = useCookies(['auth_token', 'refresh_token']);
 
     return (
         <div>
@@ -162,7 +156,7 @@ const LoginForm = () => {
                             <div className='flex flex-col gap-2 py-8'>
                                 <div>
                                     <Field name="email" type="email"
-                                        render={({ field /* { name, value, onChange, onBlur } */ }) => (
+                                        render={({ field /* { name, value, onChange, onBlur } */ }: FieldProps) => (
                                             <div className='flex items-end gap-4 border-b-2 border-gray-300 w-48 md:w-80 py-2'>
                                                 <i><MdOutlineEmail className='text-lg md:text-2xl hover:text-purple-400 ' /></i>
                                                 <input {...field} type="text" placeholder="Email" className='  text-base md:text-xl outline-none ' />
@@ -176,7 +170,7 @@ const LoginForm = () => {
 
                                 <div>
                                     <Field name="password" type="password"
-                                        render={({ field }) => (
+                                        render={({ field }: FieldProps) => (
                                             <div className='flex items-end gap-4 border-b-2 border-gray-300 w-48 md:w-80 py-2'>
                                                 <i><MdOutlinePassword className='text-lg md:text-2xl hover:text-purple-400' /></i>
                                                 <input {...field} type="password" placeholder="Password" className='  text-base md:text-xl outline-none' />
@@ -208,7 +202,7 @@ const LoginForm = () => {
                 </div>
 
                 {/* //error message */}
-                <div>       
+                <div>
                     <p>{errorMessage ? errorMessage : null}</p>
                 </div>
             </div>

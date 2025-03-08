@@ -32,7 +32,7 @@ const HomePageShimmer = () => {
 
                     <div className='flex flex-col justify-start relative mt-9 animate-pulse'>
                         {
-                            Array(8).fill("").map((item, index) => (
+                            Array(8).fill("").map((_, index) => (
 
                                 <div className={`flex justify-center  items-center  gap-4 py-8 pl-11 pr-14 ${index == 0 ? "bg-gray-300" : "bg-white"}`}>
                                     <div className={`rounded-full  w-11 h-11  ${index == 0 ? "bg-white" : "bg-gray-300"}`}></div>
@@ -59,7 +59,7 @@ const HomePageShimmer = () => {
                             {/* Repetitive boxes */}
                             <div className="grid grid-flow-row grid-cols-3 gap-12  animate-pulse">
                                 {
-                                    Array(9).fill("").map(item => (
+                                    Array(9).fill("").map(_item => (
                                         <div className='flex flex-col gap-4 '>
                                             <div className="w-64  h-40 bg-gray-300 rounded mr-4"></div>
                                             <div className="font-bold tracking-tight  text-gray-900 pl-2 pb-3 bg-gray-300 w-48 max-h-2 rounded"></div>

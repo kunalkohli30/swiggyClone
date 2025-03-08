@@ -4,7 +4,7 @@ import nonVegIcon from '../../assets/icons8-non-veg-50.png';
 import PlusMinusQuantityBtn from '../PlusMinusQuantityBtn';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faIndianRupeeSign } from '@fortawesome/free-solid-svg-icons';
-import { clearCart, fetchCart, resInfo } from '../../utils/cartSlice';
+import { clearCart, fetchCart, resInfoType } from '../../utils/cartSlice';
 import { openLoginInSlider, openSignupInSlider, toggleLogin } from '../../utils/toggleSlice';
 import UserType from '../../interfaces/User';
 import { MdVerified } from 'react-icons/md';
@@ -18,7 +18,6 @@ import { useEffect, useState } from 'react';
 import { address } from './SaveDeliveryAddress';
 import { motion } from "framer-motion";
 import onlineShoppingBg from '../../assets/cart_empty.png'
-import axiosInstance from '../../config/AxiosInstance';
 import AddPhoneNumber from './AddPhoneNumber';
 
 
@@ -31,7 +30,7 @@ const Cart = () => {
 
     // const { cartData, setCartData } = useContext(cartContext);
     const cartData: cartItemType[] = useAppSelector(state => state.cartSlice.cartItems);
-    const resInfo: resInfo | null = useAppSelector(state => state.cartSlice.resInfo);
+    const resInfo: resInfoType | null = useAppSelector(state => state.cartSlice.resInfo);
     const isLoggedIn = useAppSelector(state => state.loginSlice.isLoggedIn);
     const userData: UserType | null = useAppSelector(state => state.loginSlice.userData);
 
@@ -52,13 +51,14 @@ const Cart = () => {
         'overflow': 'hidden',
         'display': '-webkit-box',
         'WebkitLineClamp': '1',
-        'WebkitBoxOrient': 'vertical'
+        'WebkitBoxOrient': 'vertical' as 'vertical'
     }
 
     const deliveryFee = checkoutFees.deliveryFee;
     const deliveryTip = checkoutFees.deliveryTip;
-    const gst = checkoutFees.gst;
-    const itemsTotal = cartData.reduce((total, item) => total + item.unitPrice * item.quantity, 0);
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    // const _gst = checkoutFees.gst;
+    const itemsTotal = cartData.reduce((total, item) => total + (item.unitPrice && item.quantity ? item.unitPrice * item.quantity : 0), 0);
 
     useEffect(() => { dispatch(fetchCart()) }, [])
 
@@ -115,15 +115,15 @@ const Cart = () => {
                                             <div className='w-14 lg:w-16 border-2 border-wid border-gray-200 '>
                                                 <PlusMinusQuantityBtn
                                                     foodId={cartItem?.foodId}
-                                                    imageId={cartItem?.image}
-                                                    name={cartItem?.foodItemName}
-                                                    price={cartItem?.totalPrice}
+                                                    image={cartItem?.image}
+                                                    foodItemName={cartItem?.foodItemName}
+                                                    totalPrice={cartItem?.totalPrice}
                                                     isVeg={cartItem?.isVeg}
                                                 />
                                             </div>
                                             <h2 className='text-gray-500 text-xs tracking-wider text-nowrap w-7 lg:w-10'>
                                                 <FontAwesomeIcon icon={faIndianRupeeSign} className='text-xs mt-[5px] lg:pr-[2px]' />
-                                                {cartItem?.unitPrice * cartItem?.quantity}
+                                                {cartItem?.unitPrice && cartItem?.quantity ? cartItem?.unitPrice * cartItem?.quantity : 0}
                                             </h2>
                                             {/* <img                                                        //food items image 
                                         src={fetchSwiggyImagesDomainPath + cartItem?.image}

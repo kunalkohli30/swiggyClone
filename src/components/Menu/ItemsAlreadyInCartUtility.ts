@@ -1,25 +1,24 @@
 import { useState } from "react";
-import { FoodDto } from "../../interfaces/apiModels/RestaurantList";
 import { useAppDispatch, useAppSelector } from "../../utils/hooks";
 import axiosInstance from "../../config/AxiosInstance";
-import { clearCart, resInfo, setCartItemData, setRestaurantInfo, setStagedCartItem, updateQuantityInState } from "../../utils/cartSlice";
+import { resInfoType, setCartItemData, setRestaurantInfo, updateQuantityInState } from "../../utils/cartSlice";
 import { UpdateCartModel } from "../../interfaces/apiModels/CartDtos";
 import { AxiosError } from "axios";
 import { cartItemType } from "../../context/contextApi";
 
-const [showPopup, setShowPopup] = useState(false);
-const [itemToAddToCartAfterPopupIsClosed, setItemToAddToCartAfterPopupIsClosed] = useState<cartItemType | null>(null);
+const [_showPopup, setShowPopup] = useState(false);
+const [_itemToAddToCartAfterPopupIsClosed, setItemToAddToCartAfterPopupIsClosed] = useState<cartItemType | null>(null);
 
 
 const isLoggedIn = useAppSelector(state => state.loginSlice.isLoggedIn);
-const { cartItems, resInfo } = useAppSelector(state => state.cartSlice);
+const { resInfo } = useAppSelector(state => state.cartSlice);
 
 const dispatch = useAppDispatch();
 
 const fetchRestaurantData = async (id: number) => {
     let restaurantData = await axiosInstance.get(`/api/public/restaurant/${id}`);
 
-    const response: resInfo = {
+    const response: resInfoType = {
         restaurantId: restaurantData.data.id,
         restaurantName: restaurantData.data.name,
         areaName: restaurantData.data.areaName,
@@ -33,8 +32,10 @@ export const addItemToCart = async (cartItem: cartItemType) => {
 
     if (resInfo === null) {          // if resInfo.restaurantId is blank then set it to current restaurant's id
         // console.log('inside if', restaurantData, resInfo);
-        const restaurantData = await fetchRestaurantData(cartItem?.restaurantId);
-        dispatch(setRestaurantInfo(restaurantData));
+        if (cartItem && cartItem.restaurantId) {
+            const restaurantData = await fetchRestaurantData(cartItem?.restaurantId);
+            dispatch(setRestaurantInfo(restaurantData));
+        }
     }
 
     if (isLoggedIn) {
@@ -79,8 +80,8 @@ export const handleAddtoCart = (cartItem: cartItemType) => {
     if (resInfo !== null && resInfo?.restaurantId !== cartItem.restaurantId) {       //If an item from different restaurant, open popup 
         setShowPopup(true);
         setItemToAddToCartAfterPopupIsClosed(cartItem);                                     // Sets the item to be added to cart when popup is closed with yes 
-        dispatch(setStagedCartItem(cartItem));
-    } else { 
+        // dispatch(setStagedCartItem(cartItem));
+    } else {
         addItemToCart(cartItem);        // if another item is ordered from same restaurant, just add it to cart
     }
 }

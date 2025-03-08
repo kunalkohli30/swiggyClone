@@ -3,9 +3,8 @@ import { cartItemType } from "../context/contextApi";
 import { RootState } from "./Store";
 import { CartResponseModel } from "../interfaces/apiModels/CartDtos";
 import axiosInstance from "../config/AxiosInstance";
-import { act } from "react";
 
-export interface resInfo {
+export interface resInfoType {
     restaurantId: number,
     restaurantName: string,
     areaName: string,
@@ -14,7 +13,7 @@ export interface resInfo {
 
 export const fetchCart = createAsyncThunk<
     CartResponseModel | null
->("cartSlice/fetchCart", async (actions, { getState, dispatch }) => {
+>("cartSlice/fetchCart", async (_actions, { getState, dispatch }) => {
 
     const g = getState() as RootState;
 
@@ -43,7 +42,7 @@ export const fetchCart = createAsyncThunk<
                 restaurantName: cartResponse?.restaurantName,
                 areaName: cartResponse?.restaurantAreaName,
                 image: cartResponse?.restaurantImageUrl
-            } as resInfo));
+            } as resInfoType));
             // console.log('before saving data for resinfo', cartResponse);
 
             const cartItems = cartResponse.cartItems.map(item => {
@@ -54,7 +53,7 @@ export const fetchCart = createAsyncThunk<
                     quantity: item.quantity,
                     isVeg: item.veg,
                     totalPrice: item.totalPrice,
-                    unitPrice: item.unitPrice/100
+                    unitPrice: item?.unitPrice ? item?.unitPrice/100 : 0,
                 } as cartItemType
             });
             dispatch(setCartData(cartItems));
@@ -69,7 +68,7 @@ const cartSlice = createSlice({
     name: "cartSlice",
     initialState: {
         cartItems: [] as cartItemType[],
-        resInfo: null as resInfo | null,
+        resInfo: null as resInfoType | null,
         checkoutFees: {'deliveryFee': 50, 'deliveryTip': 20, 'gst': 35}
     },
 
@@ -82,7 +81,7 @@ const cartSlice = createSlice({
             // state.cartItems.filter(item => item.foodId === action.payload.)
             const cartItem = state.cartItems.filter(item => item.foodId === foodId)[0];
             if (cartItem)
-                cartItem.quantity = cartItem.quantity + 1;
+                cartItem.quantity = (cartItem.quantity ?? 0) + 1;
         },
         updateQuantityInState: (state, action: PayloadAction<cartItemType & {operation? : 'ADD' | 'REDUCE'}> ) => {
             const foodId = action.payload.foodId;
@@ -94,6 +93,7 @@ const cartSlice = createSlice({
                 state.cartItems = [...state.cartItems, cartItem];
             }
             else if (existingCartItem?.length) {
+                // @ts-ignore
                 existingCartItem[0].quantity = operation === 'ADD' ? existingCartItem[0].quantity +1 : existingCartItem[0].quantity -1;
 
                 if(existingCartItem[0].quantity === 0) 
@@ -122,17 +122,17 @@ const cartSlice = createSlice({
         setCartData: (state, action: PayloadAction<cartItemType[]>) => {
             state.cartItems = action.payload;
         },
-        setRestaurantInfo: (state, action: PayloadAction<resInfo | null>) => {
+        setRestaurantInfo: (state, action: PayloadAction<resInfoType | null>) => {
             // console.log('set resinfo', action)
             state.resInfo = action.payload;
         },
         getCheckoutFees: () => {}
     },
     extraReducers(builder) {
-        builder.addCase(fetchCart.pending, (state, action) => {
+        builder.addCase(fetchCart.pending, () => {
             console.log('pedninig');
             // state
-        }).addCase(fetchCart.fulfilled, (state, action) => {
+        }).addCase(fetchCart.fulfilled, (_, action) => {
 
             console.log(action.payload?.cartId);
         })

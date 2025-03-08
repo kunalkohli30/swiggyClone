@@ -1,23 +1,20 @@
-import { useEffect, useState } from 'react'
+import { useEffect } from 'react'
 import './App.css'
 import Navbar from './components/Navbar'
 import Body from './components/Body'
 import { Route, Routes } from 'react-router-dom'
 import RestaurantMenu from './components/Menu/RestaurantMenu'
 import Cart from './components/cart/Cart'
-import { CookiesProvider, useCookies } from 'react-cookie'
+import { CookiesProvider } from 'react-cookie'
 import Signin from './components/Signin'
-import Profile from './components/Profile'
-import { APIProvider, Map, MapCameraChangedEvent } from '@vis.gl/react-google-maps';
+import { APIProvider } from '@vis.gl/react-google-maps';
 import Search from './components/search/Search'
 import { AxiosResponse } from 'axios'
-import { cartItemType } from './context/contextApi'
-import { fetchCart, resInfo } from './utils/cartSlice'
+import { fetchCart } from './utils/cartSlice'
 import { useAppDispatch, useAppSelector } from './utils/hooks'
 import axiosInstance from './config/AxiosInstance'
 import { setLoggedIn, setUserData } from './utils/userLoginSlice'
 import UserType from './interfaces/User'
-import OrderPage from './components/Orders/OrdersPage'
 import OrdersPage from './components/Orders/OrdersPage'
 import Payment from './components/Orders/Payment'
 
@@ -99,19 +96,10 @@ function App() {
   const signInSliderVisible = useAppSelector(state => state.toggleSlice.loginToggle);
   const showFoodDetailsCard = useAppSelector(state => state.toggleSlice.foodDetailsCardPopUp);
 
-  const isLoggedIn = useAppSelector(state => state.loginSlice.isLoggedIn);
-
-  const cartData = useAppSelector(state => state.cartSlice.cartItems);
-  const resInfo = useAppSelector(state => state.cartSlice.resInfo);
-
-  const [cookies, setCookie] = useCookies(['auth_token', 'refresh_token']);
-  const authToken = cookies.auth_token;
-
-
   // useEffect(() => { console.log('isLoggedIn in app', isLoggedIn); dispatch(fetchCart({ authToken: authToken })) }, []);
 
   return (
-    <APIProvider apiKey={process.env.GOOGLE_MAPS_API_KEY} onLoad={() => console.log('Maps API has loaded.')}>
+    <APIProvider apiKey={process.env.GOOGLE_MAPS_API_KEY ? process.env.GOOGLE_MAPS_API_KEY : ""} onLoad={() => console.log('Maps API has loaded.')}>
       <CookiesProvider>
         <div className={visible || signInSliderVisible || showFoodDetailsCard ? 'max-h-screen overflow-hidden min-h-screen' : ' min-h-screen'}>
           <Routes>

@@ -4,6 +4,7 @@ import axiosInstance from "../config/AxiosInstance";
 const FoodItemsSlider = () => {
 
     const [foodTypesList, setFoodTypesList] = useState<{ name: string, imageId: string | undefined, id: string }[]>([]);
+    // @ts-ignore
     const [sliderPosition, setSliderPosition] = useState(0);
     const sliderRef = useRef<HTMLDivElement>(null);
 

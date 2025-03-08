@@ -1,5 +1,4 @@
-import { Field } from 'formik'
-import React from 'react'
+import { Field, FieldProps } from 'formik'
 
 const FormikModifiedField = ({ fieldName, fieldLabel }: { fieldName: string, fieldLabel: string }) => {
     return (
@@ -7,9 +6,10 @@ const FormikModifiedField = ({ fieldName, fieldLabel }: { fieldName: string, fie
             <Field name={fieldName}>
                 {({
                     field, // { name, value, onChange, onBlur }
+                    // @ts-ignore
                     form: { touched, errors, value }, // also values, setXXXX, handleXXXX, dirty, isValid, status, etc.
                     meta
-                }) => (
+                }: FieldProps) => (
                     <div className='relative'>
                         {/* <p>{field.value}</p> */}
                         <input

@@ -1,15 +1,14 @@
-import React, { useEffect, useRef, useState } from 'react'
+import {useRef, useState } from 'react'
 import { FaArrowLeft, FaArrowRight } from 'react-icons/fa'
-import restaurant from '../interfaces/restaurant';
 import RestaurantCard from './RestaurantCard';
 import { RestaurantDto } from '../interfaces/apiModels/RestaurantList';
 
 
-const TopRestaurants = ({ data, restaurantLis }: { data: any | undefined, restaurantLis: RestaurantDto[] }) => {
+const TopRestaurants = ({ restaurantLis }: {  restaurantLis: RestaurantDto[] }) => {
 
     // const [restaurantList, setRestaurantList] = useState<restaurant[]>([]);
     // const [restaurantLis, setRestaurantLis] = useState<Res[]>([]);
-    const [sliderPosition, setSliderPosition] = useState(0);
+    const [_sliderPosition, setSliderPosition] = useState(0);
     const sliderRef = useRef<HTMLDivElement>(null);
 
     // useEffect(() => {

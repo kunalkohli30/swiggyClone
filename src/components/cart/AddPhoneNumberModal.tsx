@@ -1,11 +1,9 @@
 import React, { useEffect, useState } from "react";
 import { motion } from "framer-motion";
-import { ConfirmationResult, linkWithCredential, PhoneAuthProvider, updatePhoneNumber } from "firebase/auth";
+import { linkWithCredential, PhoneAuthProvider, updatePhoneNumber } from "firebase/auth";
 import { auth, RecaptchaVerifier, signInWithPhoneNumber } from "../../config/firebaseAuth";
 import { FirebaseError } from "firebase/app";
 import { FaCheck } from "react-icons/fa";
-import { VscError } from "react-icons/vsc";
-import { RxCross1 } from "react-icons/rx";
 import { toast, ToastContainer } from "react-toastify";
 
 
@@ -16,7 +14,13 @@ type iProps = {
     operation: 'ADD' | 'UPDATE'
 }
 
-const AddPhoneNumberModal = ({ showModal, setShowModal, setPhoneNo, operation }: iProps) => {
+declare global {
+    interface Window {
+        recaptchaVerifier: RecaptchaVerifier;
+    }
+}
+
+const AddPhoneNumberModal = ({ setShowModal, setPhoneNo, operation }: iProps) => {
 
     const [phoneNumber, setPhoneNumber] = useState("");
     const [otpSent, setOtpSent] = useState(false);
@@ -28,7 +32,9 @@ const AddPhoneNumberModal = ({ showModal, setShowModal, setPhoneNo, operation }:
     const [phoneNoInvalid, setPhoneNoInvalid] = useState(false);
     const [isOtpVerified, setIsOtpVerified] = useState(false);
     const [showMessage, setShowMessage] = useState(false);
+    // @ts-ignore
     const [errorMessage, setErrorMessage] = useState("");
+    // @ts-ignore
     const [showOtpInvalidMessage, setShowOtpInvalidMessage] = useState(false);
     const [showError, setShowError] = useState(false);
 
@@ -42,7 +48,7 @@ const AddPhoneNumberModal = ({ showModal, setShowModal, setPhoneNo, operation }:
         // if (!window.recaptchaVerifier) {
         window.recaptchaVerifier = new RecaptchaVerifier(auth, "recaptcha-container", {
             size: "invisible", // Invisible mode
-            callback: (response) => {
+            callback: (response: string) => {
                 console.log("reCAPTCHA Verified! Response:", response);
             },
             "expired-callback": () => {
@@ -64,7 +70,7 @@ const AddPhoneNumberModal = ({ showModal, setShowModal, setPhoneNo, operation }:
     }, [showMessage]);
     // Send OTP
     const sendOTP = async () => {
-        const appVerifier = window.recaptchaVerifier;
+        const appVerifier = (window as any).recaptchaVerifier;
 
         if (!appVerifier) {
             console.error("reCAPTCHA verifier is not initialized.");
@@ -229,7 +235,7 @@ const AddPhoneNumberModal = ({ showModal, setShowModal, setPhoneNo, operation }:
                             {loading ? (
                                 <span className="flex items-center justify-center font-semibold">       {/* 5 dot animation*/}
                                     Sending OTP
-                                    {Array(5).fill("").map((_, index) => (
+                                    {Array(5).fill("").map(() => (
                                         <motion.span
                                             className="text-3xl -mt-2"
                                             animate={{ opacity: [0, 1, 0] }}

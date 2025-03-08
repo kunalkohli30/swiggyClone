@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { auth, RecaptchaVerifier, signInWithPhoneNumber } from "../config/firebaseAuth";
-import { ConfirmationResult, PhoneAuthProvider, signInWithCredential } from "firebase/auth";
+import { ConfirmationResult, PhoneAuthProvider } from "firebase/auth";
 
 export const PhoneAuth: React.FC = () => {
     const [phoneNumber, setPhoneNumber] = useState<string>("");
@@ -13,7 +13,7 @@ export const PhoneAuth: React.FC = () => {
         if (!window.recaptchaVerifier) {
             window.recaptchaVerifier = new RecaptchaVerifier(auth, "recaptcha-container", {
                 size: "invisible", // Invisible mode
-                callback: (response) => {
+                callback: (response: any) => {
                     console.log("reCAPTCHA Verified! Response:", response);
                 },
                 "expired-callback": () => {
@@ -55,7 +55,9 @@ export const PhoneAuth: React.FC = () => {
     const verifyOTP = async () => {
         try {
             console.log('otp', otp)
+            // @ts-ignore
             const credential = PhoneAuthProvider.credential(verificationId, otp);
+            // @ts-ignore
             const confResponse = confirmationResult?.confirm(otp).then((userCredential) => {
                 console.log("Successfully signed in with OTP", userCredential);
             }).catch(e => console.log('error verification', e));

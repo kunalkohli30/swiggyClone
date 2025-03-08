@@ -1,8 +1,8 @@
-import React, { useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import axiosInstance from '../../config/AxiosInstance'
-import { favoriteRestaurantResponse, RestaurantDto } from '../../interfaces/apiModels/RestaurantList'
+import { favoriteRestaurantResponse } from '../../interfaces/apiModels/RestaurantList'
 import { IconContext } from 'react-icons'
-import { FaHeart, FaRegHeart, FaStar } from 'react-icons/fa'
+import { FaHeart, FaStar } from 'react-icons/fa'
 import { Link } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
 
@@ -24,7 +24,7 @@ const Favourites = () => {
         'overflow': 'hidden',
         'display': '-webkit-box',
         'WebkitLineClamp': '2',
-        'WebkitBoxOrient': 'vertical'
+        WebkitBoxOrient: 'vertical' as 'vertical' // Explicitly cast to correct type
     }
 
 

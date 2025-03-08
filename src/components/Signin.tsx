@@ -1,7 +1,5 @@
-import React from 'react'
 import { signInWithEmailAndPassword, signInWithPopup, signOut } from 'firebase/auth'
 import { auth, provider } from '../config/firebaseAuth'
-import SignupForm from './SignupForm'
 const Signin = () => {
 
     async function handleAuth() {
@@ -14,13 +12,13 @@ const Signin = () => {
             .then((userCredential) => {
                 console.log('inside then', userCredential);
                 // Signed in 
-                const user = userCredential.user;
+                // const user = userCredential.user;
                 // ...
             })
             .catch((error) => {
                 console.log('inside catch', error);
-                const errorCode = error.code;
-                const errorMessage = error.message;
+                // const errorCode = error.code;
+                // const errorMessage = error.message;
             });
 
         // const data = await signInWithEmailAndPassword(auth, provider)
@@ -31,7 +29,7 @@ const Signin = () => {
         signOut(auth).then(() => {
             // Sign-out successful.
             console.log('signout succesful')
-        }).catch((error) => {
+        }).catch(() => {
             console.log('signout error');
             // An error happened.
         });

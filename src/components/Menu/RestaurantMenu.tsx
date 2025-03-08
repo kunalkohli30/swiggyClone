@@ -12,17 +12,6 @@ import { favoriteRestaurantResponse, MenuDto, OfferDto, RestaurantDto } from '..
 import MenuShimmer from '../Skeleton/MenuShimmer';
 import axiosInstance from '../../config/AxiosInstance';
 
-type params = {
-    id: number
-}
-
-type discountData = {
-    info: {
-        offerLogo: string,        //offerLogo
-        header: string,     //header
-        couponCode: string
-    }
-}
 
 type openMenuType = {
     index: number,
@@ -32,15 +21,17 @@ type openMenuType = {
 const RestaurantMenu = () => {
 
     const topDealsSliderRef = useRef<HTMLDivElement>(null);
-    const [restaurantInfo, setRestaurantInfo] = useState<RestaurantDto>([]);
+    const [restaurantInfo, setRestaurantInfo] = useState<RestaurantDto | null>(null);
     const [menuData, setMenuData] = useState<MenuDto[]>([]);
     const [discountData, setDiscountData] = useState<OfferDto[]>([]);
+    // @ts-ignore
     const [sliderPosition, setSliderPosition] = useState(0);
+    // @ts-ignore
     const [openMenus, setOpenMenus] = useState<openMenuType[]>([]);
     const [addedToFavs, setAddedToFavs] = useState(false);
 
     const params = useParams() as { id: string };
-    const id: string = params.id.split('-').at(-1);
+    const id: string | undefined = params?.id?.split('-').at(-1);
 
     useEffect(() => {
         fetchRestaurantData();
@@ -55,7 +46,7 @@ const RestaurantMenu = () => {
                 // setFavoriteRestaurants(response.data)
                 if (response.data && response.data.length) {
                     const favoriteRestaurants: favoriteRestaurantResponse[] = response.data;
-                    if (favoriteRestaurants.some(res => res.restaurantId === parseInt(id)))
+                    if (favoriteRestaurants.some(res => id ? res.restaurantId === parseInt(id): false))
                         setAddedToFavs(true);
                 }
             })
@@ -77,7 +68,7 @@ const RestaurantMenu = () => {
         const menu = await axiosInstance.get("api/public/food/restaurant/" + id);
 
         setMenuData(menu.data);
-        setOpenMenus(Array(menuData.length).fill(null).map((x, i) => { return { index: i, status: true } }));
+        setOpenMenus(Array(menuData.length).fill(null).map((_, i) => { return { index: i, status: true } }));
     }
 
     const addToFavourites = () => {
@@ -215,7 +206,7 @@ const RestaurantMenu = () => {
                                 <div className={`overflow-x-auto no-scrollbar `} ref={topDealsSliderRef} onScroll={saveScrollPosition}>
                                     <div className={`flex  duration-300 gap-4`}>
                                         {
-                                            discountData?.map((item, index) => (
+                                            discountData?.map((item) => (
                                                 <DealsCard
                                                     key={item.id}
                                                     discountData={

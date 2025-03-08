@@ -1,4 +1,3 @@
-import React from 'react'
 
 const MenuShimmer = () => {
     return (
@@ -53,7 +52,7 @@ const MenuShimmer = () => {
                 <div className='flex flex-col gap-5'>
                     <div className='text-gray-500 h-6 bg-gray-200 w-44 mt-6 rounded-xl animate-pulse'></div>
                     <div className='flex flex-row gap-5'>
-                        {Array(3).fill("").map(item => (
+                        {Array(3).fill("").map(() => (
                             <div className='h-14 w-56 rounded-xl bg-gray-200 animate-pulse flex flex-row items-center gap-5 pl-4'>
 
                                 <div className='bg-white h-7 w-7 rounded-full '></div>

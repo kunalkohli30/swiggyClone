@@ -6,10 +6,9 @@ import { useState } from 'react';
 import { cartItemType } from '../../context/contextApi';
 import PlusMinusQuantityBtn from '../PlusMinusQuantityBtn';
 import ItemsAlreadyInCartPopup from './ItemsAlreadyInCartPopup';
-import { useDispatch, useSelector } from 'react-redux';
-import { addToCart, resInfo, setCartItemData, setRestaurantInfo, updateQuantityInState } from '../../utils/cartSlice';
+import { useDispatch } from 'react-redux';
+import { resInfoType, setCartItemData, setRestaurantInfo, updateQuantityInState } from '../../utils/cartSlice';
 import { FoodDto, RestaurantDto } from '../../interfaces/apiModels/RestaurantList';
-import { useCookies } from 'react-cookie';
 import { UpdateCartModel } from '../../interfaces/apiModels/CartDtos';
 import axiosInstance from '../../config/AxiosInstance';
 import { AxiosError } from 'axios';
@@ -29,9 +28,7 @@ const MenuItemsList = ({ itemCards, restaurantData }: iProps) => {
     const cartData = useAppSelector(state => state.cartSlice.cartItems);
     const resInfo = useAppSelector(state => state.cartSlice.resInfo);
 
-    const [cookies] = useCookies(['auth_token', 'refresh_token']);
     const isLoggedIn = useAppSelector(state => state.loginSlice.isLoggedIn);
-    const authToken = cookies.auth_token;
 
     const dispatch = useDispatch();
 
@@ -57,7 +54,7 @@ const MenuItemsList = ({ itemCards, restaurantData }: iProps) => {
                     restaurantName: restaurantData.name,
                     areaName: restaurantData.areaName,
                     image: restaurantData.imageId
-                } as resInfo
+                } as resInfoType
             ))
         }
 
@@ -147,7 +144,7 @@ const MenuItemsList = ({ itemCards, restaurantData }: iProps) => {
                                             <PlusMinusQuantityBtn
                                                 foodId={foodItem?.id}
                                                 image={foodItem?.imageId}
-                                                name={foodItem?.name}
+                                                foodItemName={foodItem?.name}
                                                 totalPrice={foodItem?.price / 100}
                                                 isVeg={foodItem?.vegetarian}
                                             />

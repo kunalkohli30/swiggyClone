@@ -4,7 +4,6 @@ import { RxCross1 } from 'react-icons/rx';
 import { ExistingOrdersDto } from '../../interfaces/apiModels/OrderDto';
 import { GoHome, GoLocation } from 'react-icons/go';
 import { IoBriefcaseOutline } from 'react-icons/io5';
-import { FaCheck } from 'react-icons/fa';
 import { IoMdCheckmark } from 'react-icons/io';
 import vegIcon from '../../assets/icons8-veg-48.png';
 import nonVegIcon from '../../assets/icons8-non-veg-50.png';

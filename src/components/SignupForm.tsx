@@ -1,8 +1,7 @@
 import { useRef, useState } from 'react'
-import { Formik, Form, Field, FormikValues, FormikProps } from 'formik';
+import { Formik, Form, Field, FormikValues, FormikProps, FieldProps } from 'formik';
 import * as Yup from 'yup';
 import { MdOutlineEmail, MdOutlinePassword, MdOutlinePerson } from 'react-icons/md';
-import { useDispatch } from 'react-redux';
 import { setLoggedIn, setUserData } from '../utils/userLoginSlice';
 import { toggleLogin } from '../utils/toggleSlice';
 import axiosInstance from '../config/AxiosInstance';
@@ -17,15 +16,16 @@ import { useAppDispatch } from '../utils/hooks';
 // When user fills the email, name, password and clicks submit, an OTP is sent on email id and the otp verification dialog comes up, when user enters the otp, signup method runs and user is registered
 // After registeration, login method is called and user is logged in to the application
 
-type signUpFormType = {
-    email: string;
-    fullName: string;
-    password: string;
-};
+// type signUpFormType = {
+//     email: string;
+//     fullName: string;
+//     password: string;
+// };
 
 const SignupForm = () => {
 
     const dispatch = useAppDispatch();
+    // @ts-ignore
     const [isemailVerified, setIsEmailVerified] = useState<boolean | null>(null);
     const [showEmailConfirmationDialog, setShowEmailConfirmationDialog] = useState(false);
     const [errorMessage, setErrorMessage] = useState("");
@@ -48,7 +48,7 @@ const SignupForm = () => {
     const sendOtpEmail = (values: FormikValues) => {
         setShowEmailConfirmationDialog(true);
         axiosInstance.post("/api/public/otp/generate", { email: values.email })
-            .then(response => {})
+            // .then(response => {})
             .catch(error => { alert('failed to send otp'); console.log('error occurred while sending otp', error) });
     }
 
@@ -137,7 +137,7 @@ const SignupForm = () => {
                         <div className='flex flex-col gap-2 py-12'>
                             <div>
                                 <Field name="email" type="email"
-                                    render={({ field /* { name, value, onChange, onBlur } */ }) => (
+                                    render={({ field /* { name, value, onChange, onBlur } */ }: FieldProps) => (
                                         <div className='flex items-end gap-4 border-b-2 border-gray-300 w-48 md:w-80 py-2'>
                                             <i><MdOutlineEmail className='text-lg md:text-2xl hover:text-purple-400 mb-1' /></i>
                                             <input {...field} type="text" placeholder="Email" className='text-base  md:text-xl outline-none' />
@@ -145,13 +145,13 @@ const SignupForm = () => {
                                     )}
                                 />
                                 {errors.email && touched.email ? (
-                                    <div className='text-sm text-red-400'>{errors.email}</div>
+                                    <div className='text-sm text-red-400'>{errors?.email.toString()}</div>
                                 ) : null}
                                 {/* {emailAlreadyRegisteredMessage} */}
                             </div>
                             <div>
                                 <Field name="fullName"
-                                    render={({ field /* { name, value, onChange, onBlur } */ }) => (
+                                    render={({ field /* { name, value, onChange, onBlur } */ }: FieldProps) => (
                                         <div className='flex items-end gap-4 border-b-2 border-gray-300 text-lg md:text-2xl w-48 md:w-80 py-2'>
                                             <i><MdOutlinePerson className='text-lg md:text-2xl hover:text-purple-400 mb-1' /></i>
                                             <input {...field} type="text" placeholder="Full Name" className='text-base md:text-xl outline-none' />
@@ -159,19 +159,19 @@ const SignupForm = () => {
                                     )}
                                 />
                                 {errors.fullName && touched.fullName ? (
-                                    <div className='text-sm text-red-400 mx-auto'>{errors.fullName}</div>
+                                    <div className='text-sm text-red-400 mx-auto'>{errors.fullName.toString()}</div>
                                 ) : null}
                             </div>
                             <div>
                                 <Field name="password" type="password"
-                                    render={({ field }) => (
+                                    render={({ field }: FieldProps) => (
                                         <div className='flex items-end gap-4 border-b-2 border-gray-300  w-48 md:w-80 py-2'>
                                             <i><MdOutlinePassword className='text-2xl hover:text-purple-400 mb-1 ' /></i>
                                             <input {...field} type="password" placeholder="Password" className='  text-base md:text-xl  outline-none' />
                                         </div>
                                     )}
                                 />
-                                {errors.password && touched.password ? <div className='text-sm text-red-400'>{errors.password}</div> : null}
+                                {errors.password && touched.password ? <div className='text-sm text-red-400'>{errors.password.toString()}</div> : null}
                             </div>
                         </div>
                         <button

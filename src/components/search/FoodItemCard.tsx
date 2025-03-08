@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React from 'react'
 import { FoodDto, RestaurantDto } from '../../interfaces/apiModels/RestaurantList'
 import { FaArrowRight } from 'react-icons/fa6'
 import { IoIosStar } from 'react-icons/io'
@@ -8,8 +8,7 @@ import { faIndianRupeeSign } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { MdKeyboardArrowRight } from 'react-icons/md';
 import PlusMinusQuantityBtn from '../PlusMinusQuantityBtn';
-import FoodDetailsCard from './FoodDetailsCard';
-import { useAppDispatch, useAppSelector } from '../../utils/hooks';
+import { useAppDispatch } from '../../utils/hooks';
 import { setShowFoodDetailsCard } from '../../utils/toggleSlice';
 import { Link } from 'react-router-dom';
 
@@ -30,7 +29,7 @@ const FoodItemCard = ({ foodItem, restaurantData, quantity, handleAddToCart, set
     const restaurantMenuPath = `${restaurantData?.name}-${restaurantData?.locality}-${restaurantData?.locality}-${restaurantData?.id}`;
 
     const dispatch = useAppDispatch();
-    const showFoodDetailsCard = useAppSelector(state => state.toggleSlice.foodDetailsCardPopUp);
+    // const showFoodDetailsCard = useAppSelector(state => state.toggleSlice.foodDetailsCardPopUp);
 
     return (
         <div className='w-full rounded-2xl bg-white flex flex-col p-5'>
@@ -83,7 +82,7 @@ const FoodItemCard = ({ foodItem, restaurantData, quantity, handleAddToCart, set
                                 <PlusMinusQuantityBtn
                                     foodId={foodItem?.id}
                                     image={foodItem?.imageId}
-                                    name={foodItem?.name}
+                                    foodItemName={foodItem?.name}
                                     totalPrice={foodItem?.price / 100}
                                     isVeg={foodItem?.vegetarian}
                                 />

@@ -1,9 +1,9 @@
 import { useEffect, useState } from 'react'
 import axiosInstance from '../../config/AxiosInstance';
-import { useLocation, useNavigate, useParams } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { useAppSelector } from '../../utils/hooks';
 import { cartItemType } from '../../context/contextApi';
-import { resInfo } from '../../utils/cartSlice';
+import { resInfoType } from '../../utils/cartSlice';
 import { address } from '../cart/SaveDeliveryAddress';
 import { MdArrowBackIos } from 'react-icons/md';
 import { RiDiscountPercentFill } from "react-icons/ri";
@@ -17,9 +17,16 @@ declare global {
         Razorpay: any;
     }
 }
+
+interface RazorpayPaymentResponse {
+    razorpay_payment_id: string;
+    razorpay_order_id?: string;
+    razorpay_signature?: string;
+}
+
 const Payment = () => {
 
-    const { component } = useParams(); // Fetches the "userId" parameter from the URL
+    // const { component } = useParams(); // Fetches the "userId" parameter from the URL
     // console.log('component', component);
     const navigate = useNavigate();
 
@@ -29,7 +36,7 @@ const Payment = () => {
     const selectedAddress: address = location.state || {}; // Ensure it has a default value
 
     const cartData: cartItemType[] = useAppSelector(state => state.cartSlice.cartItems);
-    const resInfo: resInfo | null = useAppSelector(state => state.cartSlice.resInfo);
+    const resInfo: resInfoType | null = useAppSelector(state => state.cartSlice.resInfo);
     const checkoutFees = useAppSelector(state => state.cartSlice.checkoutFees);
 
     const [discountData, setDiscountData] = useState<OfferDto[]>([]);
@@ -37,21 +44,21 @@ const Payment = () => {
     const [showCouponTooltip, setShowCouponTooltip] = useState(false);
     const [tncAgreement, setTncAgreement] = useState(false);
 
-    const getOrderData = () => {
-        const orderItems = cartData.map(cartItem => {
-            return {
-                foodId: cartItem.foodId,
-                quantity: cartItem.quantity
-            }
-        });
+    // const getOrderData = () => {
+    //     const orderItems = cartData.map(cartItem => {
+    //         return {
+    //             foodId: cartItem.foodId,
+    //             quantity: cartItem.quantity
+    //         }
+    //     });
 
-        return {
-            orderItems: orderItems,
-            restaurantId: cartData[0].restaurantId,
-            createdAt: new Date(),
-            address: selectedAddress
-        }
-    }
+    //     return {
+    //         orderItems: orderItems,
+    //         restaurantId: cartData[0].restaurantId,
+    //         createdAt: new Date(),
+    //         address: selectedAddress
+    //     }
+    // }
 
     // console.log('order details', orderDetails);
 
@@ -112,7 +119,7 @@ const Payment = () => {
                     upi: "1", // Disable UPI
                     wallet: "0", // Disable Wallets
                 },
-                handler: function (response) {
+                handler: function (response: RazorpayPaymentResponse) {
                     // console.log("Payment Successful! Payment ID: " + response.razorpay_payment_id + "," + response.razorpay_order_id + ", " + response.razorpay_signature);
                     paymentVerification(response);
 
@@ -134,7 +141,7 @@ const Payment = () => {
         }
     };
 
-    const paymentVerification = (response) => {
+    const paymentVerification = (response: RazorpayPaymentResponse) => {
         axiosInstance.post("/api/razorpay/payment-confirmation", {
             orderId: response.razorpay_order_id,
             paymentId: response.razorpay_payment_id,
@@ -151,8 +158,11 @@ const Payment = () => {
         )
     }
 
-    const getTotalItems = () => cartData.map(item => item?.quantity).reduce((total, item) => total + item);
-    const getTotalAmount = () => cartData.reduce((total, item) => total + item.quantity * item.unitPrice, 0) + checkoutFees.deliveryFee + checkoutFees.deliveryTip;
+    const getTotalItems = () => cartData
+        .map(item => item?.quantity ?? 0)
+        .reduce((total, item) => total + item);
+        
+    const getTotalAmount = () => cartData.reduce((total, item) => total + (item.unitPrice ? (item.quantity ?? 0) * item?.unitPrice : 0), 0) + checkoutFees.deliveryFee + checkoutFees.deliveryTip;
     const getDiscountAmount = () => {
         if (appliedOffer) {
             const total = getTotalAmount();
@@ -215,7 +225,7 @@ const Payment = () => {
                 }
                 <div className='flex flex-col gap-2 mt-4'>                  {/* offers */}
                     {appliedOffer === null &&
-                        discountData.length && discountData.map((offer, index) => (
+                        discountData.length && discountData.map((offer) => (
 
                             <div className='flex gap-4 items-center justify-between px-6 py-2 border-2 border-gray-200 rounded-lg'>
                                 <img src={offer.offerLogo} className='w-10 h-10' />

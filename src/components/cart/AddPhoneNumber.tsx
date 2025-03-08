@@ -5,7 +5,6 @@ import { TbAlertOctagonFilled } from "react-icons/tb";
 import { MdAddIcCall, MdOutlineVerified } from 'react-icons/md';
 import AddPhoneNumberModal from './AddPhoneNumberModal';
 import { AnimatePresence } from 'framer-motion';
-import { auth } from '../../config/firebaseAuth';
 
 type iProps = {
     phoneNoExists: boolean;
@@ -29,21 +28,6 @@ const AddPhoneNumber = ({phoneNoExists, setPhoneNoExists}: iProps) => {
     }
 
     useEffect(() => checkPhoneNo(), [showPhoneNoModal]);
-
-    const user = auth.currentUser;
-    const removePhoneNo = async () => {
-        if (user) {
-            try {
-                await user.unlink("phone");
-                console.log("Phone number removed successfully.");
-            } catch (error) {
-                console.error("Error removing phone number:", error);
-            }
-        } else {
-            console.log("No user is signed in.");
-        }
-    }
-    removePhoneNo();
 
     return (
         <div
@@ -91,7 +75,7 @@ const AddPhoneNumber = ({phoneNoExists, setPhoneNoExists}: iProps) => {
             )
             }
             <AnimatePresence>
-                {showPhoneNoModal && <AddPhoneNumberModal showModal={showPhoneNoModal} setShowModal={setShowPhoneNoModal} setPhoneNo={setPhoneNo} />}
+                {showPhoneNoModal && <AddPhoneNumberModal operation='ADD' showModal={showPhoneNoModal} setShowModal={setShowPhoneNoModal} setPhoneNo={setPhoneNo} />}
             </AnimatePresence>
         </div>
     )

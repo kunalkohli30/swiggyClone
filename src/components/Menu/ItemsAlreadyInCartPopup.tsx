@@ -1,12 +1,11 @@
-import React, { useContext } from 'react'
-import { cartContext } from '../../context/contextApi'
-import { useDispatch, useSelector } from 'react-redux'
+import React from 'react'
+import { useDispatch } from 'react-redux'
 import { clearCart } from '../../utils/cartSlice';
 
 const ItemsAlreadyInCartPopup = ({ showPopup, setShowPopup, addItemToCart }:
     { showPopup: boolean, setShowPopup: React.Dispatch<React.SetStateAction<boolean>>, addItemToCart: () => void }) => {
 
-    const cartData = useSelector(state => state.cartSlice.cartItems);
+    // const cartData = useAppSelector(state => state.cartSlice.cartItems);
     const dispatch = useDispatch();
 
     const resetCartAndClosePopup = () => {

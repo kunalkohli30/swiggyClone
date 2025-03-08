@@ -1,12 +1,10 @@
 import React, { useEffect, useState } from 'react'
-import { useDispatch, useSelector } from 'react-redux';
-import { showAddressSlider, showAdrSlider } from '../../utils/toggleSlice';
-import { useCookies } from 'react-cookie';
+import { useDispatch } from 'react-redux';
+import { showAdrSlider } from '../../utils/toggleSlice';
 import SaveDeliveryAddress, { address } from './SaveDeliveryAddress';
 import { GoHome } from 'react-icons/go';
 import { MdAddLocationAlt, MdWorkOutline } from 'react-icons/md';
 import { IoLocationOutline, IoLocationSharp } from 'react-icons/io5';
-import { FaRegEdit } from 'react-icons/fa';
 import axiosInstance from '../../config/AxiosInstance';
 import { useAppSelector } from '../../utils/hooks';
 import { FaCircleCheck } from 'react-icons/fa6';
@@ -23,7 +21,7 @@ const UserAddresses = ({ setIsAddressSelected, selectedAddress, setSelectedAddre
     const greenTextColor = '[#60b246]';
 
     const isLoggedIn = useAppSelector(state => state.loginSlice.isLoggedIn);
-    const isAddressSliderVisible = useAppSelector(state => state.toggleSlice.showAddressSlider);
+    // const isAddressSliderVisible = useAppSelector(state => state.toggleSlice.showAddressSlider);
     const showAddressSlider = useAppSelector(state => state.toggleSlice.showAddressSlider);
     const dispatch = useDispatch();
 
@@ -44,7 +42,7 @@ const UserAddresses = ({ setIsAddressSelected, selectedAddress, setSelectedAddre
 
     const handleDelete = (adrId: number) => {
         axiosInstance.delete("/api/user/address/" + adrId)
-            .then(res => getAddresses())
+            .then(() => getAddresses())
             .catch(error => { alert('validation failed while deleting user address'); console.log('validation failed while deleting user address', error) })
     }
 

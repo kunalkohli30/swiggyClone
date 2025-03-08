@@ -36,7 +36,7 @@ export type MenuDto = {
     "foodItems": FoodDto[]
 }
 
-export type OfferDto {
+export type OfferDto = {
     "id": number,
     "header": string,
     "couponCode": string,

@@ -1,7 +1,6 @@
-import React, { useState } from 'react'
 import { RxCross1 } from 'react-icons/rx';
-import { useDispatch, useSelector } from 'react-redux';
-import { openLoginInSlider, openSignupInSlider, toggleLogin, toggleSearchBar } from '../utils/toggleSlice';
+import { useDispatch } from 'react-redux';
+import { openLoginInSlider, openSignupInSlider, toggleLogin} from '../utils/toggleSlice';
 import SignupForm from './SignupForm';
 import LoginForm from './LoginForm';
 import { useAppSelector } from '../utils/hooks';
@@ -9,7 +8,7 @@ import { AnimatePresence, motion } from "framer-motion";
 
 const LoginSlider = () => {
 
-    const showLoginSlider = useAppSelector(state => state.toggleSlice.loginToggle);
+    // const showLoginSlider = useAppSelector(state => state.toggleSlice.loginToggle);
     const showLoginInSlider = useAppSelector(state => state.toggleSlice.showLoginInSlider);
     const dispatch = useDispatch();
 

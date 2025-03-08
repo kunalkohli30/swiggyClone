@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react'
+import { ReactNode, useEffect, useRef, useState } from 'react'
 import { useAppSelector } from '../../utils/hooks';
 import UserType from '../../interfaces/User';
 import { FaBagShopping } from 'react-icons/fa6';
@@ -10,22 +10,30 @@ import axiosInstance from '../../config/AxiosInstance';
 import Favourites from './Favourites';
 import { motion, AnimatePresence } from 'framer-motion'
 
+type Tab = {
+    name: 'Orders' | 'Favourites' | 'Addresses';
+    icon: ReactNode;
+};
+
 const OrdersPage = () => {
 
     // const bgColor = '[#37718E]'
-    const bgColor = '[#ab7171]'
-    const leftMenuBgColor = '[#EDF1F7]';
+
+    /* eslint-disable @typescript-eslint/no-unused-vars */
+    // const _bgColor = '[#ab7171]'
+    // const _leftMenuBgColor = '[#EDF1F7]';
+    /* eslint-enable @typescript-eslint/no-unused-vars */
+
     const textColor = '[#282C3F]';
 
     const userData: UserType | null = useAppSelector(state => state.loginSlice.userData);
     const [orders, setOrders] = useState<ExistingOrdersDto[] | null>(null);
 
-    const tabs: [{ name: 'Orders' | 'Favourites' | 'Addresses', icon: any }] = [
-        { name: 'Orders', icon: <FaBagShopping className=' text-white ' /> },
-        { name: 'Favourites', icon: <FaHeart className=' text-white ' /> },
-        { name: 'Addresses', icon: <MdLocationPin className=' text-white ' /> }
+    const tabs: Tab[] = [
+        { name: 'Orders', icon: <FaBagShopping className='text-white' /> },
+        { name: 'Favourites', icon: <FaHeart className='text-white' /> },
+        { name: 'Addresses', icon: <MdLocationPin className='text-white' /> }
     ];
-
     const [selectedTab, setSelectedTab] = useState<'Orders' | 'Favourites' | 'Addresses'>('Orders');
 
     const capitalizeInitials = (name: string | undefined): string => {
