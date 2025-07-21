@@ -1,0 +1,8 @@
+{
+  "projects": {
+    "default": "urban-eats-1",
+    "prod": "urbaneats-6ba52"
+  },
+  "targets": {},
+  "etags": {}
+}
