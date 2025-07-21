@@ -2,7 +2,7 @@ import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 
 const backendUrl = process.env.BACKEND_URL ?? 'https://urbaneatsdelivery.online/';
-
+console.log('backendUrl:', backendUrl, process.env.BACKEND_URL);
 
 // https://vitejs.dev/config/
 export default defineConfig({
