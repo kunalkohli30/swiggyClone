@@ -1,12 +1,15 @@
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 
+const backendUrl = process.env.BACKEND_URL ?? 'https://urbaneatsdelivery.online/';
+
+
 // https://vitejs.dev/config/
 export default defineConfig({
     plugins: [react()],
     define: {
         'process.env': {
-            BACKEND_URL: JSON.stringify(process.env.BACKEND_URL || 'https://urbaneatsdelivery.online/'),
+            BACKEND_URL: JSON.stringify(backendUrl),
             GOOGLE_MAPS_API_KEY: JSON.stringify(process.env.GOOGLE_MAPS_API_KEY),
             API_KEY: JSON.stringify(process.env.API_KEY),
             AUTH_DOMAIN: JSON.stringify(process.env.AUTH_DOMAIN || 'urbaneats-6ba52.firebaseapp.com'),
