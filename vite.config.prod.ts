@@ -9,7 +9,7 @@ export default defineConfig({
     plugins: [react()],
     define: {
         'process.env': {
-            BACKEND_URL: JSON.stringify(backendUrl),
+            BACKEND_URL: backendUrl,
             GOOGLE_MAPS_API_KEY: JSON.stringify(process.env.GOOGLE_MAPS_API_KEY),
             API_KEY: JSON.stringify(process.env.API_KEY),
             AUTH_DOMAIN: JSON.stringify(process.env.AUTH_DOMAIN || 'urbaneats-6ba52.firebaseapp.com'),
