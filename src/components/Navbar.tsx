@@ -175,7 +175,9 @@ const Navbar = () => {
                                 <Link to='/profile'>
                                     <li className="hover:text-orange-500 cursor-pointer mt-4 text-gray-800 font-bold font-cabin">Favourites</li>
                                 </Link>
-                                <li className="hover:text-orange-500 cursor-pointer mt-4 pb-4 text-gray-800 font-bold font-cabin">Logout</li>
+                                <Link to='/'>
+                                    <li className="hover:text-orange-500 cursor-pointer mt-4 pb-4 text-gray-800 font-bold font-cabin" onClick={logout}>Logout</li>
+                                </Link>
                             </ul>
                         </motion.div>
 
@@ -240,7 +242,7 @@ const Navbar = () => {
                         <div className='h-[80px] w-[80px]'>
                             <Link to="/">
                                 <img
-                                    src='https://i.pinimg.com/originals/b3/8a/a1/b38aa1b21050b0e769a97eb751d12829.png'      //swiggy icon
+                                    src='./src/assets/urban_eats_logo.png'      //swiggy icon
 
                                 />
                             </Link>

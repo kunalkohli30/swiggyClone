@@ -203,9 +203,9 @@ const Payment = () => {
             </div>
             <div className='flex gap-4 py-5' >
                 <div className='flex flex-col items-center '>
-                    <svg width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="6" cy="6" r="4.5" fill="white" stroke="#6541E4" stroke-width="3"></circle></svg>
-                    <svg width="4" height="15" viewBox="0 0 4 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M2 0V27" stroke="#6541E4" stroke-width="5"></path></svg>
-                    <svg width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="6" cy="6" r="4.5" fill="white" stroke="#6541E4" stroke-width="3"></circle></svg>
+                    <svg width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="https://www.w3.org/2000/svg"><circle cx="6" cy="6" r="4.5" fill="white" stroke="#6541E4" stroke-width="3"></circle></svg>
+                    <svg width="4" height="15" viewBox="0 0 4 24" fill="none" xmlns="https://www.w3.org/2000/svg"><path d="M2 0V27" stroke="#6541E4" stroke-width="5"></path></svg>
+                    <svg width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="https://www.w3.org/2000/svg"><circle cx="6" cy="6" r="4.5" fill="white" stroke="#6541E4" stroke-width="3"></circle></svg>
                 </div>
                 <div className='flex flex-col items-start -mt-1'>
                     <p className='font-semibold font-display text-sm'>{`${resInfo?.restaurantName}`}</p>

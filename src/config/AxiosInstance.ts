@@ -1,17 +1,29 @@
 // axiosInstance.js
 import axios, { AxiosError, InternalAxiosRequestConfig } from 'axios';
 
+// ** The first request that gets a 401 triggers the refresh and, after success, calls onRefreshed().
+// ** All requests (including the first one) that hit a 401 while refreshing are queued via subscribeTokenRefresh and resolved when the token is refreshed.
+
+// So,
+// After onRefreshed() is called, the code should continue to the return new Promise(...) block because we want to queue the current request for retry.
+// Do not return Promise.resolve() after onRefreshed().
 
 // Token refresh control variables
 let isRefreshing = false;
-let refreshSubscribers: (() => void)[] = [];
+
+// refreshSubscribers is an array of functions that will be called when the token is refreshed. 
+// While the token is refreshing all the requests would be added to this array.
+let refreshSubscribers: (() => void)[] = [];    
 
 // Function to subscribe requests to the token refresh process
+// Pushes the requests(in form of callback function which can be executed by just calling the callback) to the refreshSubscribers array
 const subscribeTokenRefresh = (callback: () => void) => {
     refreshSubscribers.push(callback);
 };
 
 // Function to notify all subscribers when the token is refreshed
+// When called, it will run all the requests that were waiting for the token refresh
+// this is useful when the token is refreshed and we want to run all the requests that were waiting for the token refresh
 const onRefreshed = () => {
     console.log('pending requests running after refresh', refreshSubscribers.map(req => req.toString()));
     refreshSubscribers.forEach((callback) => callback());       // running all the requests one by one
@@ -19,8 +31,8 @@ const onRefreshed = () => {
 };
 
 const axiosInstance = axios.create({
-    // baseURL: 'https://api.urbaneatsdelivery.online',
-    baseURL: 'http://localhost:8080',
+    baseURL: process.env.BACKEND_URL || 'http://localhost:8080', // Default to localhost if BACKEND_URL is not set
+    // baseURL: 'https://api.urbaneatsdelivery.online/',
     withCredentials: true, // This ensures cookies are sent with requests
 });
 
@@ -43,6 +55,8 @@ axiosInstance.interceptors.response.use(
                 originalRequest._retry = true;
 
                 // Ensure we don't retry the refresh token request itself
+                // If the request is for refreshing the token and 401 is received, we return a rejected promise
+                // This prevents an infinite loop of trying to refresh the token
                 if (originalRequest.url?.includes('/auth/refresh-access-token')) {
                     console.error('Refresh token is invalid. Redirecting to login.');
                     return Promise.reject(error); // Stop further retries
