@@ -30,6 +30,8 @@ const onRefreshed = () => {
     refreshSubscribers = []; // Clear the subscribers after notifying
 };
 
+
+console.log('first axios instance created', process.env.BACKEND_URL);
 const axiosInstance = axios.create({
     baseURL: process.env.BACKEND_URL || 'http://localhost:8080', // Default to localhost if BACKEND_URL is not set
     // baseURL: 'https://api.urbaneatsdelivery.online/',
