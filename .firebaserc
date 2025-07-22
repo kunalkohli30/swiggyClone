@@ -1,6 +1,7 @@
 {
   "projects": {
-    "default": "urbaneats-6ba52"
+    "default": "urbaneats-6ba52",
+    "prod": "urbaneats-6ba52"
   },
   "targets": {},
   "etags": {}

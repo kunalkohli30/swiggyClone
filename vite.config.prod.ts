@@ -10,15 +10,15 @@ export default defineConfig({
     define: {
         'process.env': {
             BACKEND_URL: backendUrl,
-            GOOGLE_MAPS_API_KEY: JSON.stringify(process.env.GOOGLE_MAPS_API_KEY),
-            API_KEY: JSON.stringify(process.env.API_KEY),
-            AUTH_DOMAIN: JSON.stringify(process.env.AUTH_DOMAIN || 'urbaneats-6ba52.firebaseapp.com'),
-            PROJECT_ID: JSON.stringify(process.env.PROJECT_ID || 'urbaneats-6ba52'),
-            STORAGE_BUCKET: JSON.stringify(process.env.STORAGE_BUCKET || 'urbaneats-6ba52.firebasestorage.app'),
-            MESSAGING_SENDER_ID: JSON.stringify(process.env.MESSAGING_SENDER_ID),
-            APP_ID: JSON.stringify(process.env.APP_ID),
-            MEASUREMENT_ID: JSON.stringify(process.env.MEASUREMENT_ID),
-            RAZORPAY_KEY: JSON.stringify(process.env.RAZORPAY_KEY),
+            GOOGLE_MAPS_API_KEY: process.env.GOOGLE_MAPS_API_KEY,
+            API_KEY: process.env.API_KEY,
+            AUTH_DOMAIN: process.env.AUTH_DOMAIN || 'urbaneats-6ba52.firebaseapp.com',
+            PROJECT_ID: process.env.PROJECT_ID || 'urbaneats-6ba52',
+            STORAGE_BUCKET: process.env.STORAGE_BUCKET || 'urbaneats-6ba52.firebasestorage.app',
+            MESSAGING_SENDER_ID: process.env.MESSAGING_SENDER_ID,
+            APP_ID: process.env.APP_ID,
+            MEASUREMENT_ID: process.env.MEASUREMENT_ID,
+            RAZORPAY_KEY: process.env.RAZORPAY_KEY,
         }
     }
 })
